@@ -1,0 +1,268 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="sync.Mutex 是一个互斥锁，默认为零值时为开锁状态。
+"><title>Go 互斥锁 sync.Mutex</title>
+<link rel=canonical href=https://wnanbei.github.io/post/go-%E4%BA%92%E6%96%A5%E9%94%81-sync.mutex/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Go 互斥锁 sync.Mutex">
+<meta property="og:description" content="sync.Mutex 是一个互斥锁，默认为零值时为开锁状态。
+">
+<meta property="og:url" content="https://wnanbei.github.io/post/go-%E4%BA%92%E6%96%A5%E9%94%81-sync.mutex/">
+<meta property="og:site_name" content="WNANBEI">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:tag" content="Concurrency"><meta property="article:tag" content="sync"><meta property="article:published_time" content="2021-05-05T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-10T09:42:41+08:00">
+<meta name=twitter:title content="Go 互斥锁 sync.Mutex">
+<meta name=twitter:description content="sync.Mutex 是一个互斥锁，默认为零值时为开锁状态。
+">
+<link rel="shortcut icon" href=img/avatar.jpg>
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/go%E6%A0%87%E5%87%86%E5%BA%93/>
+Go标准库
+</a>
+</header>
+<h2 class=article-title>
+<a href=/post/go-%E4%BA%92%E6%96%A5%E9%94%81-sync.mutex/>Go 互斥锁 sync.Mutex</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2021-05-05</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p><code>sync.Mutex</code> 是一个互斥锁，默认为零值时为开锁状态。</p>
+<h2 id=用法>用法</h2>
+<h3 id=使用方式>使用方式</h3>
+<p>Lock 方法锁住 m，如果 m 已经加锁，则阻塞直到 m 解锁。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>m</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Mutex</span>) <span style=color:#a6e22e>Lock</span>()
+</code></pre></div><p>Unlock 方法解锁 m，如果 m 未加锁会导致运行时错误。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>m</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Mutex</span>) <span style=color:#a6e22e>Unlock</span>()
+</code></pre></div><h3 id=数据结构>数据结构</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Mutex</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>state</span> <span style=color:#66d9ef>int32</span>
+    <span style=color:#a6e22e>sema</span>  <span style=color:#66d9ef>uint32</span>
+}
+<span style=color:#66d9ef>const</span> (
+   <span style=color:#a6e22e>mutexLocked</span> = <span style=color:#ae81ff>1</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#66d9ef>iota</span> <span style=color:#75715e>// mutex is locked
+</span><span style=color:#75715e></span>   <span style=color:#a6e22e>mutexWoken</span>
+   <span style=color:#a6e22e>mutexStarving</span>
+   <span style=color:#a6e22e>mutexWaiterShift</span> = <span style=color:#66d9ef>iota</span>
+)
+</code></pre></div><ul>
+<li>
+<p><strong><code>state</code></strong></p>
+<p>是一个公用字段，共 32 位。其中低三位分别表示：</p>
+<ul>
+<li>Mutex 是否已被加锁</li>
+<li>是否有某个唤醒的 G 要尝试获取锁</li>
+<li>Mutex 是否处于饥饿状态</li>
+</ul>
+<p>高 29 位则表示等待锁的 G 数量。</p>
+</li>
+<li>
+<p><strong><code>sema</code></strong></p>
+<p>sema 是一个信号量，用来实现阻塞/唤醒申请锁的 G。</p>
+</li>
+</ul>
+<h3 id=执行流程>执行流程</h3>
+<p><strong>Mutex Lock 上锁流程：</strong></p>
+<ul>
+<li>非饥饿模式下，新获取锁的 G 将会进入自旋，去竞争锁。为了避免自旋消耗太多 cpu，G 最多会自旋 4 次,每次空转 30 个 cpu 时钟周期；</li>
+</ul>
+<p><figure>
+<a href=/images/go/syncMutexLock.webp>
+<img src=/images/go/syncMutexLock.webp loading=lazy alt=syncMutexLock>
+</a>
+<figcaption>syncMutexLock</figcaption>
+</figure></p>
+<p><strong>Mutex UnLock 解锁流程：</strong></p>
+<p><figure>
+<a href=/images/go/syncMutexUnlock.webp>
+<img src=/images/go/syncMutexUnlock.webp loading=lazy alt=syncMutexUnlock>
+</a>
+<figcaption>syncMutexUnlock</figcaption>
+</figure></p>
+<h3 id=饥饿状态>饥饿状态</h3>
+<p>互斥锁有两种状态：正常状态和饥饿状态。</p>
+<p><strong>正常状态：</strong></p>
+<p>所有等待锁的 G 按照 FIFO 顺序等待。</p>
+<ul>
+<li>刚唤醒的 G 不会直接拥有锁，而是会和新请求锁的 G 去竞争锁；</li>
+<li>新请求锁的 G 具有一个优势：它正在 CPU 上执行；</li>
+<li>可能有好几个 G 同时在新请求锁，所以刚唤醒的 G 有很大可能在锁竞争中失败；</li>
+<li>在这种情况下，这个被唤醒的 G 在没有获得锁之后会加入到等待队列的最前面。</li>
+</ul>
+<p><strong>饥饿状态：</strong></p>
+<p>如果一个等待的 G 超过 <code>1ms</code> 没有获取锁，那么它将会把锁转变为饥饿模式。</p>
+<ul>
+<li>饥饿模式下，锁的所有权将从执行 unlock 的 G 直接交给等待队列中的第一个 G;</li>
+<li>新来的 G 将不能再去尝试竞争锁，即使锁是 unlock 状态，也不会去尝试自旋操作，而是放在等待队列的尾部;</li>
+<li>如果一个等待的 G 获取了锁，并且满足以下其中一个条件,那么该 G 会将锁的状态转换为正常状态:
+<ol>
+<li>它是队列中的最后一个 G；</li>
+<li>它等待的时间小于 1ms；</li>
+</ol>
+</li>
+</ul>
+<p><strong>总结：</strong></p>
+<p>正常模式具有较好的性能，因为 G 可以连续多次尝试获取锁，即使还有其他的阻塞等待锁的 G，也不需要进入休眠阻塞。</p>
+<p>饥饿模式的作用是阻止尾部延迟的现象。</p>
+<h3 id=总结>总结</h3>
+<ol>
+<li>Mutex 不可被复制；</li>
+<li>就算在较低 QPS 下，Mutex 的锁竞争也会比较激烈。如果一定要使用 Mutex，一定要采用取模分片的方式去使用其中一个 Mutex 进行资源控制，降低锁粒度；</li>
+<li>不同 G 可以 Unlock 同一个 Mutex，但是 Unlock 一个无锁状态的 Mutex 会报错；</li>
+<li>Mutex 不是可重入锁，如果连续两次 Lock 操作，会直接死锁。</li>
+</ol>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/go/>Go</a>
+<a href=/tags/concurrency/>Concurrency</a>
+<a href=/tags/sync/>sync</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+<section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>
+最后更新于 2021-11-10 09:42:41
+</span>
+</section></footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/post/go-%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C-atomic/>
+<div class=article-details>
+<h2 class=article-title>Go 原子操作 atomic</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%AF%B9%E8%B1%A1%E6%B1%A0-sync.pool/>
+<div class=article-details>
+<h2 class=article-title>Go 对象池 sync.Pool</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E7%9A%84-sync.map/>
+<div class=article-details>
+<h2 class=article-title>Go 并发安全的 sync.Map</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E6%A0%87%E5%87%86%E5%BA%93-sync.waitgroup/>
+<div class=article-details>
+<h2 class=article-title>Go 标准库 sync.WaitGroup</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E8%AF%BB%E5%86%99%E9%94%81-sync.rwmutex/>
+<div class=article-details>
+<h2 class=article-title>Go 读写锁 sync.RWMutex</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 WNANBEI
+</section>
+<section class=powerby>
+The world has kissed my soul with its pain, asking for its return in songs. <br>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#用法>用法</a>
+<ol>
+<li><a href=#使用方式>使用方式</a></li>
+<li><a href=#数据结构>数据结构</a></li>
+<li><a href=#执行流程>执行流程</a></li>
+<li><a href=#饥饿状态>饥饿状态</a></li>
+<li><a href=#总结>总结</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

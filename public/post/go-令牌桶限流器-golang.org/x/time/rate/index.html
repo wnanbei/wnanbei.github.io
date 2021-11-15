@@ -1,0 +1,246 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="golang.org/x/time/rate 提供了一个使用令牌桶 Token Bucket 算法实现的限流器。
+"><title>Go 令牌桶限流器 golang.org/x/time/rate</title>
+<link rel=canonical href=https://wnanbei.github.io/post/go-%E4%BB%A4%E7%89%8C%E6%A1%B6%E9%99%90%E6%B5%81%E5%99%A8-golang.org/x/time/rate/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Go 令牌桶限流器 golang.org/x/time/rate">
+<meta property="og:description" content="golang.org/x/time/rate 提供了一个使用令牌桶 Token Bucket 算法实现的限流器。
+">
+<meta property="og:url" content="https://wnanbei.github.io/post/go-%E4%BB%A4%E7%89%8C%E6%A1%B6%E9%99%90%E6%B5%81%E5%99%A8-golang.org/x/time/rate/">
+<meta property="og:site_name" content="WNANBEI">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:tag" content="Concurrency"><meta property="article:published_time" content="2021-10-25T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-09T23:34:24+08:00">
+<meta name=twitter:title content="Go 令牌桶限流器 golang.org/x/time/rate">
+<meta name=twitter:description content="golang.org/x/time/rate 提供了一个使用令牌桶 Token Bucket 算法实现的限流器。
+">
+<link rel="shortcut icon" href=img/avatar.jpg>
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/go%E6%A0%87%E5%87%86%E5%BA%93/>
+Go标准库
+</a>
+</header>
+<h2 class=article-title>
+<a href=/post/go-%E4%BB%A4%E7%89%8C%E6%A1%B6%E9%99%90%E6%B5%81%E5%99%A8-golang.org/x/time/rate/>Go 令牌桶限流器 golang.org/x/time/rate</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2021-10-25</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p><code>golang.org/x/time/rate</code> 提供了一个使用令牌桶 <code>Token Bucket</code> 算法实现的限流器。</p>
+<h2 id=用法>用法</h2>
+<h3 id=创建限流器>创建限流器</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewLimiter</span>(<span style=color:#a6e22e>r</span> <span style=color:#a6e22e>Limit</span>, <span style=color:#a6e22e>b</span> <span style=color:#66d9ef>int</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>
+</code></pre></div><ul>
+<li>r - 每秒令牌桶中产生的 Token，为 0 则不产生 Token。</li>
+<li>b - 令牌桶的最大容量。</li>
+</ul>
+<p><code>r</code> 的值类型为 <code>float64</code>，如果要设置超过秒以上的频率，可以使用 <code>Every()</code> 方法：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>limit</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>Every</span>(<span style=color:#ae81ff>100</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span>)
+<span style=color:#a6e22e>limiter</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>NewLimiter</span>(<span style=color:#a6e22e>limit</span>, <span style=color:#ae81ff>1</span>)
+</code></pre></div><h3 id=消费-token>消费 Token</h3>
+<p><code>golang.org/x/time/rate</code> 提供了三种方式消费 Token，这三种方式在令牌桶内令牌不足时，有不同的处理方式。</p>
+<h4 id=allowallown>Allow/AllowN</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>Allow</span>() <span style=color:#66d9ef>bool</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>AllowN</span>(<span style=color:#a6e22e>now</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>, <span style=color:#a6e22e>n</span> <span style=color:#66d9ef>int</span>) <span style=color:#66d9ef>bool</span>
+</code></pre></div><p>在某一时刻，如果桶中 Token 数量大于等于 n，则消费 n 个 Token 并返回 true。</p>
+<p>如果不满足则不消费，返回 false。</p>
+<p><code>Allow</code> 等价于 <code>AllowN(time.Now(), 1)</code>。</p>
+<p><strong>在超出频率限制时，希望丢弃或跳过事件的时候使用此方法。</strong></p>
+<h4 id=waitwaitn>Wait/WaitN</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>Wait</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>) (<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>WaitN</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Context</span>, <span style=color:#a6e22e>n</span> <span style=color:#66d9ef>int</span>) (<span style=color:#a6e22e>err</span> <span style=color:#66d9ef>error</span>)
+</code></pre></div><p>从令牌桶中消费 n 个 Token，如果令牌桶中 Token 数量不足，那么将会阻塞，直到 Token 数量满足。</p>
+<p>如果 Token 数量满足则直接返回。</p>
+<p>Wait 方法可以使用 context 来控制超时时间。</p>
+<p><code>Wait</code> 等价于 <code>WaitN(ctx, 1)</code>。</p>
+<p><strong>在超出频率时，如果希望有一个最长等待时间的，使用此方法。</strong></p>
+<h4 id=reservereserven>Reserve/ReserveN</h4>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>Reserve</span>() <span style=color:#f92672>*</span><span style=color:#a6e22e>Reservation</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>ReserveN</span>(<span style=color:#a6e22e>now</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>, <span style=color:#a6e22e>n</span> <span style=color:#66d9ef>int</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>Reservation</span>
+</code></pre></div><p>调用 <code>Reserve</code> 方法后，无论 Token 是否充足，都会消费 N 个令牌并返回一个 <code>Reservation</code> 对象。</p>
+<p>但是此时并不一定允许你执行相应逻辑，如果桶内 Token 不足，需要 <code>Delay()</code> 延迟一定时间执行。</p>
+<p>示例：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>r</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>lim</span>.<span style=color:#a6e22e>ReserveN</span>(<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Now</span>(), <span style=color:#ae81ff>1</span>)
+<span style=color:#66d9ef>if</span> !<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>OK</span>() {
+  <span style=color:#75715e>// Not allowed to act! Did you remember to set lim.burst to be &gt; 0 ?
+</span><span style=color:#75715e></span>  <span style=color:#66d9ef>return</span>
+}
+<span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Sleep</span>(<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>Delay</span>())
+<span style=color:#a6e22e>Act</span>()
+</code></pre></div><p>Reservation 对象拥有的方法：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Reservation</span>) <span style=color:#a6e22e>Cancel</span>() <span style=color:#75715e>// 取消消费，并尝试返还 Token
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Reservation</span>) <span style=color:#a6e22e>CancelAt</span>(<span style=color:#a6e22e>now</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Reservation</span>) <span style=color:#a6e22e>Delay</span>() <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Duration</span> <span style=color:#75715e>// 返回需要延迟执行的时间
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Reservation</span>) <span style=color:#a6e22e>DelayFrom</span>(<span style=color:#a6e22e>now</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>) <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Duration</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>r</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Reservation</span>) <span style=color:#a6e22e>OK</span>() <span style=color:#66d9ef>bool</span> <span style=color:#75715e>// 判断令牌桶是否能提供请求的令牌数
+</span></code></pre></div><p><strong>在超出频率限制时，如果希望始终执行事件的，使用此方法。</strong></p>
+<h3 id=动态调整速率>动态调整速率</h3>
+<p>获取限制频率和桶容量大小：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>Burst</span>() <span style=color:#66d9ef>int</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>Limit</span>() <span style=color:#a6e22e>Limit</span>
+</code></pre></div><p>调整桶的容量大小：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>SetBurst</span>(<span style=color:#a6e22e>newBurst</span> <span style=color:#66d9ef>int</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>SetBurstAt</span>(<span style=color:#a6e22e>now</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>, <span style=color:#a6e22e>newBurst</span> <span style=color:#66d9ef>int</span>)
+</code></pre></div><p>调整限制频率：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>SetLimit</span>(<span style=color:#a6e22e>newLimit</span> <span style=color:#a6e22e>Limit</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>lim</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Limiter</span>) <span style=color:#a6e22e>SetLimitAt</span>(<span style=color:#a6e22e>now</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Time</span>, <span style=color:#a6e22e>newLimit</span> <span style=color:#a6e22e>Limit</span>)
+</code></pre></div>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/go/>Go</a>
+<a href=/tags/concurrency/>Concurrency</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+<section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>
+最后更新于 2021-11-09 23:34:24
+</span>
+</section></footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/post/go-%E4%BA%92%E6%96%A5%E9%94%81-sync.mutex/>
+<div class=article-details>
+<h2 class=article-title>Go 互斥锁 sync.Mutex</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C-atomic/>
+<div class=article-details>
+<h2 class=article-title>Go 原子操作 atomic</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%AF%B9%E8%B1%A1%E6%B1%A0-sync.pool/>
+<div class=article-details>
+<h2 class=article-title>Go 对象池 sync.Pool</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E7%9A%84-sync.map/>
+<div class=article-details>
+<h2 class=article-title>Go 并发安全的 sync.Map</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E6%A0%87%E5%87%86%E5%BA%93-sync.waitgroup/>
+<div class=article-details>
+<h2 class=article-title>Go 标准库 sync.WaitGroup</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 WNANBEI
+</section>
+<section class=powerby>
+The world has kissed my soul with its pain, asking for its return in songs. <br>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#用法>用法</a>
+<ol>
+<li><a href=#创建限流器>创建限流器</a></li>
+<li><a href=#消费-token>消费 Token</a>
+<ol>
+<li><a href=#allowallown>Allow/AllowN</a></li>
+<li><a href=#waitwaitn>Wait/WaitN</a></li>
+<li><a href=#reservereserven>Reserve/ReserveN</a></li>
+</ol>
+</li>
+<li><a href=#动态调整速率>动态调整速率</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

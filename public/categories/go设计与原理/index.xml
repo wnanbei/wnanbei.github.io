@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Go设计与原理 on WNANBEI</title><link>https://wnanbei.github.io/categories/go%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%8E%9F%E7%90%86/</link><description>Recent content in Go设计与原理 on WNANBEI</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><atom:link href="https://wnanbei.github.io/categories/go%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%8E%9F%E7%90%86/index.xml" rel="self" type="application/rss+xml"/><item><title>CSP 并发编程模型</title><link>https://wnanbei.github.io/post/csp-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B/</link><pubDate>Thu, 05 Aug 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/csp-%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E6%A8%A1%E5%9E%8B/</guid><description>&lt;p>&lt;code>CSP - Communicating Sequential Process&lt;/code>，通信顺序进程，是一种并发编程模型，用于描述两个独立的并发实体通过共享的通讯 channel 进行通信。&lt;/p></description></item><item><title>Go GC 垃圾回收</title><link>https://wnanbei.github.io/post/go-gc-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</link><pubDate>Thu, 05 Aug 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/go-gc-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</guid><description>&lt;p>垃圾回收 - &lt;code>GC&lt;/code> - &lt;code>garbage collection&lt;/code> 是自动内存管理的一种形式。通常由垃圾收集器收集并适时回收或重用不再被对象占用的内存。&lt;/p>
+&lt;p>垃圾回收作为内存管理的一部分，包含 3 个重要的功能：&lt;/p>
+&lt;ul>
+&lt;li>如何分配和管理新对象。&lt;/li>
+&lt;li>如何识别正在使用中的对象。&lt;/li>
+&lt;li>如何清除不再使用的对象。&lt;/li>
+&lt;/ul></description></item><item><title>Go GMP 调度器</title><link>https://wnanbei.github.io/post/go-gmp-%E8%B0%83%E5%BA%A6%E5%99%A8/</link><pubDate>Sun, 01 Aug 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/go-gmp-%E8%B0%83%E5%BA%A6%E5%99%A8/</guid><description>&lt;p>GMP Scheduler 是 Runtime 中几乎最重要的组件，它的作用是：&lt;/p>
+&lt;blockquote>
+&lt;p>For scheduling goroutines onto kernel threads.&lt;/p>
+&lt;/blockquote>
+&lt;p>GMP Scheduler 的核心思想是：&lt;/p>
+&lt;ol>
+&lt;li>重用线程。&lt;/li>
+&lt;li>限制同时运行（不包含阻塞）的线程数为 N，N 为 CPU 逻辑核心数。&lt;/li>
+&lt;/ol>
+&lt;p>Go scheduler 的职责就是将所有处于 runnable 的 Goroutines 均匀分布到在 P 上运行的 M，利用多核并行，实现更强大的并发。&lt;/p></description></item></channel></rss>

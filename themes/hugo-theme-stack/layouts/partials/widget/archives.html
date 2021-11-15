@@ -1,0 +1,17 @@
+{{- $taxonomy := $.Site.GetPage "taxonomyTerm" "categories" -}}
+{{- $terms := $taxonomy.Pages -}}
+{{ if $terms }}
+<section class="widget archives">
+    <h2 class="section-title">{{ $taxonomy.Title }}</h2>
+    <div class="widget-archive--list">
+        {{ range $terms }}
+        <div class="archives-year">
+            <a href="{{ .RelPermalink }}">
+                <span class="year">{{- .Title -}}</span>
+                <span class="count">{{ len .Pages }}</span>
+            </a>
+        </div>
+        {{ end }}
+    </div>
+</section>
+{{ end }}

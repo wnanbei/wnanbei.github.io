@@ -1,0 +1,196 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content><title>PostgreSQL 数据库与表</title>
+<link rel=canonical href=https://wnanbei.github.io/post/postgresql-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E8%A1%A8/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="PostgreSQL 数据库与表">
+<meta property="og:description" content>
+<meta property="og:url" content="https://wnanbei.github.io/post/postgresql-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E8%A1%A8/">
+<meta property="og:site_name" content="WNANBEI">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Database"><meta property="article:tag" content="PostgreSQL"><meta property="article:published_time" content="2021-02-06T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-09T18:06:35+08:00">
+<meta name=twitter:title content="PostgreSQL 数据库与表">
+<meta name=twitter:description content>
+<link rel="shortcut icon" href=img/avatar.jpg>
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/postgresql/>
+PostgreSQL
+</a>
+</header>
+<h2 class=article-title>
+<a href=/post/postgresql-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E8%A1%A8/>PostgreSQL 数据库与表</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2021-02-06</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 1 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<h2 id=数据库>数据库</h2>
+<h3 id=创建数据库>创建数据库</h3>
+<p>创建数据库需要 <code>superuser</code> 或者 <code>CREATEDB</code> 的权限。</p>
+<p>默认情况下，创建的新数据库是克隆的数据库标准模板 <code>template1</code>，如果需要创建原始的数据库，需要指定模板为 <code>template0</code>。</p>
+<p>语法：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=color:#66d9ef>CREATE</span> <span style=color:#66d9ef>DATABASE</span> name
+    [ [ <span style=color:#66d9ef>WITH</span> ] [ <span style=color:#66d9ef>OWNER</span> [<span style=color:#f92672>=</span>] user_name ]
+           [ <span style=color:#66d9ef>TEMPLATE</span> [<span style=color:#f92672>=</span>] <span style=color:#66d9ef>template</span> ]
+           [ <span style=color:#66d9ef>ENCODING</span> [<span style=color:#f92672>=</span>] <span style=color:#66d9ef>encoding</span> ]
+           [ LC_COLLATE [<span style=color:#f92672>=</span>] lc_collate ]
+           [ LC_CTYPE [<span style=color:#f92672>=</span>] lc_ctype ]
+           [ TABLESPACE [<span style=color:#f92672>=</span>] tablespace_name ]
+           [ ALLOW_CONNECTIONS [<span style=color:#f92672>=</span>] allowconn ]
+           [ <span style=color:#66d9ef>CONNECTION</span> <span style=color:#66d9ef>LIMIT</span> [<span style=color:#f92672>=</span>] connlimit ]
+           [ IS_TEMPLATE [<span style=color:#f92672>=</span>] istemplate ] ]
+</code></pre></div><p>参数：</p>
+<ul>
+<li><code>name</code> - 数据库名。</li>
+<li><code>user_name</code> - 数据库的拥有者，未指定则默认为执行创建数据库命令的用户。</li>
+<li><code>template</code> - 数据库创建模板，默认为 <code>template1</code>。</li>
+<li><code>encoding</code> - 字符编码，默认为模板的编码。</li>
+<li><code>tablespace_name</code> - 默认表空间的名称。</li>
+<li><code>connlimit</code> - 连接数量限制。</li>
+</ul>
+<h3 id=删除数据库>删除数据库</h3>
+<p>如果有任何人正在连接到数据库，则此时无法删除数据库。</p>
+<p>语法：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=color:#66d9ef>DROP</span> <span style=color:#66d9ef>DATABASE</span> [ <span style=color:#66d9ef>IF</span> <span style=color:#66d9ef>EXISTS</span> ] name
+</code></pre></div><h3 id=查看数据库>查看数据库</h3>
+<p>使用 <code>\l+</code> 可以列出数据库的详细信息：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>                                 List <span style=color:#66d9ef>of</span> databases
+   Name    <span style=color:#f92672>|</span>  <span style=color:#66d9ef>Owner</span>   <span style=color:#f92672>|</span> <span style=color:#66d9ef>Encoding</span> <span style=color:#f92672>|</span>  <span style=color:#66d9ef>Collate</span>   <span style=color:#f92672>|</span>   Ctype    <span style=color:#f92672>|</span>   <span style=color:#66d9ef>Access</span> <span style=color:#66d9ef>privileges</span>
+<span style=color:#75715e>-----------+----------+----------+------------+------------+-----------------------
+</span><span style=color:#75715e></span> postgres  <span style=color:#f92672>|</span> postgres <span style=color:#f92672>|</span> UTF8     <span style=color:#f92672>|</span> en_US.utf8 <span style=color:#f92672>|</span> en_US.utf8 <span style=color:#f92672>|</span>
+ template0 <span style=color:#f92672>|</span> postgres <span style=color:#f92672>|</span> UTF8     <span style=color:#f92672>|</span> en_US.utf8 <span style=color:#f92672>|</span> en_US.utf8 <span style=color:#f92672>|</span> <span style=color:#f92672>=</span><span style=color:#66d9ef>c</span><span style=color:#f92672>/</span>postgres          <span style=color:#f92672>+</span>
+           <span style=color:#f92672>|</span>          <span style=color:#f92672>|</span>          <span style=color:#f92672>|</span>            <span style=color:#f92672>|</span>            <span style=color:#f92672>|</span> postgres<span style=color:#f92672>=</span>CTc<span style=color:#f92672>/</span>postgres
+ template1 <span style=color:#f92672>|</span> postgres <span style=color:#f92672>|</span> UTF8     <span style=color:#f92672>|</span> en_US.utf8 <span style=color:#f92672>|</span> en_US.utf8 <span style=color:#f92672>|</span> <span style=color:#f92672>=</span><span style=color:#66d9ef>c</span><span style=color:#f92672>/</span>postgres          <span style=color:#f92672>+</span>
+           <span style=color:#f92672>|</span>          <span style=color:#f92672>|</span>          <span style=color:#f92672>|</span>            <span style=color:#f92672>|</span>            <span style=color:#f92672>|</span> postgres<span style=color:#f92672>=</span>CTc<span style=color:#f92672>/</span>postgres
+</code></pre></div><h3 id=切换数据库>切换数据库</h3>
+<p>使用 <code>\c</code> 可以切换数据库，使用 <code>\conninfo</code> 可以查看当前连接情况：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql>postgres<span style=color:#f92672>=#</span> <span style=color:#960050;background-color:#1e0010>\</span><span style=color:#66d9ef>c</span> test;
+You <span style=color:#66d9ef>are</span> now connected <span style=color:#66d9ef>to</span> <span style=color:#66d9ef>database</span> <span style=color:#e6db74>&#34;test&#34;</span> <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>user</span> <span style=color:#e6db74>&#34;postgres&#34;</span>.
+test<span style=color:#f92672>=#</span> <span style=color:#960050;background-color:#1e0010>\</span>conninfo
+You <span style=color:#66d9ef>are</span> connected <span style=color:#66d9ef>to</span> <span style=color:#66d9ef>database</span> <span style=color:#e6db74>&#34;test&#34;</span> <span style=color:#66d9ef>as</span> <span style=color:#66d9ef>user</span> <span style=color:#e6db74>&#34;postgres&#34;</span> via socket <span style=color:#66d9ef>in</span> <span style=color:#e6db74>&#34;/var/run/postgresql&#34;</span> <span style=color:#66d9ef>at</span> port <span style=color:#e6db74>&#34;5432&#34;</span>.
+</code></pre></div>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/database/>Database</a>
+<a href=/tags/postgresql/>PostgreSQL</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+<section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>
+最后更新于 2021-11-09 18:06:35
+</span>
+</section></footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/post/postgresql-%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/>
+<div class=article-details>
+<h2 class=article-title>PostgreSQL 安装与配置</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 WNANBEI
+</section>
+<section class=powerby>
+The world has kissed my soul with its pain, asking for its return in songs. <br>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#数据库>数据库</a>
+<ol>
+<li><a href=#创建数据库>创建数据库</a></li>
+<li><a href=#删除数据库>删除数据库</a></li>
+<li><a href=#查看数据库>查看数据库</a></li>
+<li><a href=#切换数据库>切换数据库</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

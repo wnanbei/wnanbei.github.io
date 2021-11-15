@@ -1,0 +1,235 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="context 指的是上下文，以下是几种 ctx 类型:
+ emptyCtx - 所有 ctx 类型的根，用 context.TODO()，或 context.Background() 来生成。 valueCtx - 主要就是为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成一棵树形结构。 cancelCtx - 用来取消程序的执行树，一般用 WithCancel，WithTimeout，WithDeadline 返回的取消函数本质上都是对应了 cancelCtx。 timerCtx - 在 cancelCtx 上包了一层，支持基于时间的 cancel。 "><title>Go 上下文 context</title>
+<link rel=canonical href=https://wnanbei.github.io/post/go-%E4%B8%8A%E4%B8%8B%E6%96%87-context/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Go 上下文 context">
+<meta property="og:description" content="context 指的是上下文，以下是几种 ctx 类型:
+ emptyCtx - 所有 ctx 类型的根，用 context.TODO()，或 context.Background() 来生成。 valueCtx - 主要就是为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成一棵树形结构。 cancelCtx - 用来取消程序的执行树，一般用 WithCancel，WithTimeout，WithDeadline 返回的取消函数本质上都是对应了 cancelCtx。 timerCtx - 在 cancelCtx 上包了一层，支持基于时间的 cancel。 ">
+<meta property="og:url" content="https://wnanbei.github.io/post/go-%E4%B8%8A%E4%B8%8B%E6%96%87-context/">
+<meta property="og:site_name" content="WNANBEI">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:tag" content="Concurrency"><meta property="article:published_time" content="2020-06-05T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-09T23:34:24+08:00">
+<meta name=twitter:title content="Go 上下文 context">
+<meta name=twitter:description content="context 指的是上下文，以下是几种 ctx 类型:
+ emptyCtx - 所有 ctx 类型的根，用 context.TODO()，或 context.Background() 来生成。 valueCtx - 主要就是为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成一棵树形结构。 cancelCtx - 用来取消程序的执行树，一般用 WithCancel，WithTimeout，WithDeadline 返回的取消函数本质上都是对应了 cancelCtx。 timerCtx - 在 cancelCtx 上包了一层，支持基于时间的 cancel。 ">
+<link rel="shortcut icon" href=img/avatar.jpg>
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/go%E6%A0%87%E5%87%86%E5%BA%93/>
+Go标准库
+</a>
+</header>
+<h2 class=article-title>
+<a href=/post/go-%E4%B8%8A%E4%B8%8B%E6%96%87-context/>Go 上下文 context</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-06-05</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>context 指的是上下文，以下是几种 ctx 类型:</p>
+<ul>
+<li>emptyCtx - 所有 ctx 类型的根，用 <code>context.TODO()</code>，或 <code>context.Background()</code> 来生成。</li>
+<li>valueCtx - 主要就是为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成一棵树形结构。</li>
+<li>cancelCtx - 用来取消程序的执行树，一般用 <code>WithCancel</code>，<code>WithTimeout</code>，<code>WithDeadline</code> 返回的取消函数本质上都是对应了 cancelCtx。</li>
+<li>timerCtx - 在 cancelCtx 上包了一层，支持基于时间的 cancel。</li>
+</ul>
+<h2 id=用法>用法</h2>
+<h3 id=初始化-context>初始化 context</h3>
+<p>一般使用 <code>context.TODO()</code> 和 <code>context.Background()</code> 创建 context，是所有 context 的根，todo 和 background 两者本质上只有名字区别，在按 string 输出的时候会有区别。</p>
+<h3 id=valuectx>valueCtx</h3>
+<p>valueCtx 主要就是用来携带贯穿整个逻辑流程的数据，使用 <code>WithValue</code> 创建。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>orderID</span> <span style=color:#66d9ef>int</span>
+<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>x</span> = <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>TODO</span>()
+<span style=color:#a6e22e>x</span> = <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>WithValue</span>(<span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>orderID</span>(<span style=color:#ae81ff>1</span>), <span style=color:#e6db74>&#34;1234&#34;</span>)
+<span style=color:#a6e22e>x</span> = <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>WithValue</span>(<span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>orderID</span>(<span style=color:#ae81ff>2</span>), <span style=color:#e6db74>&#34;2345&#34;</span>)
+<span style=color:#a6e22e>x</span> = <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>WithValue</span>(<span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>orderID</span>(<span style=color:#ae81ff>3</span>), <span style=color:#e6db74>&#34;3456&#34;</span>)
+</code></pre></div><p>key 必须为非空，且可比较。</p>
+<p>在查找值，即执行 Value 操作时，会先判断当前节点的 k 是不是等于用户的输入 k，如果相等，返回结果，如果不等，会依次向上从子节点向父节点，一直查找到整个 ctx 的根。没有找到返回 nil。是一个递归流程：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>valueCtx</span>) <span style=color:#a6e22e>Value</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>interface</span>{}) <span style=color:#66d9ef>interface</span>{} {
+ <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>key</span> <span style=color:#f92672>==</span> <span style=color:#a6e22e>key</span> {
+  <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>val</span>
+ }
+ <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Context</span>.<span style=color:#a6e22e>Value</span>(<span style=color:#a6e22e>key</span>) <span style=color:#75715e>// 这里发生了递归，c.Context 就是 c.parent
+</span><span style=color:#75715e></span>}
+</code></pre></div><h3 id=cancelctx>cancelCtx</h3>
+<p>cancelCtx 主要用于协程的控制，例如关闭协程。使用 <code>WithCancel</code> 创建。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>ctx</span>, <span style=color:#a6e22e>cancelFn</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>WithCancel</span>(<span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>TODO</span>())
+<span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>() {
+    <span style=color:#66d9ef>for</span> {
+        <span style=color:#66d9ef>select</span> {
+            <span style=color:#66d9ef>case</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>jobChan</span>:
+            <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;do my job&#34;</span>)
+            <span style=color:#66d9ef>case</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>Done</span>():
+            <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;parent call me to quit&#34;</span>)
+            <span style=color:#66d9ef>break</span> <span style=color:#a6e22e>jobLoop</span>
+        }
+    }
+}()
+<span style=color:#75715e>// 停止所有 worker
+</span><span style=color:#75715e></span><span style=color:#a6e22e>cancelFn</span>()
+</code></pre></div><h3 id=timerctx>timerCtx</h3>
+<p>timerCtx 用于定时的取消任务。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>ctx</span>, <span style=color:#a6e22e>cancel</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>WithTimeout</span>(<span style=color:#a6e22e>context</span>.<span style=color:#a6e22e>Background</span>(), <span style=color:#ae81ff>50</span><span style=color:#f92672>*</span><span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Millisecond</span>)
+<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>cancel</span>()
+
+<span style=color:#66d9ef>select</span> {
+    <span style=color:#66d9ef>case</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>After</span>(<span style=color:#ae81ff>1</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>time</span>.<span style=color:#a6e22e>Second</span>):
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;overslept&#34;</span>)
+    <span style=color:#66d9ef>case</span> <span style=color:#f92672>&lt;-</span><span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>Done</span>():
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>Err</span>()) <span style=color:#75715e>// prints &#34;context deadline exceeded&#34;
+</span><span style=color:#75715e></span>}
+</code></pre></div>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/go/>Go</a>
+<a href=/tags/concurrency/>Concurrency</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+<section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>
+最后更新于 2021-11-09 23:34:24
+</span>
+</section></footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/post/go-%E4%BB%A4%E7%89%8C%E6%A1%B6%E9%99%90%E6%B5%81%E5%99%A8-golang.org/x/time/rate/>
+<div class=article-details>
+<h2 class=article-title>Go 令牌桶限流器 golang.org/x/time/rate</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E4%BA%92%E6%96%A5%E9%94%81-sync.mutex/>
+<div class=article-details>
+<h2 class=article-title>Go 互斥锁 sync.Mutex</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%8E%9F%E5%AD%90%E6%93%8D%E4%BD%9C-atomic/>
+<div class=article-details>
+<h2 class=article-title>Go 原子操作 atomic</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%AF%B9%E8%B1%A1%E6%B1%A0-sync.pool/>
+<div class=article-details>
+<h2 class=article-title>Go 对象池 sync.Pool</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%B9%B6%E5%8F%91%E5%AE%89%E5%85%A8%E7%9A%84-sync.map/>
+<div class=article-details>
+<h2 class=article-title>Go 并发安全的 sync.Map</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 WNANBEI
+</section>
+<section class=powerby>
+The world has kissed my soul with its pain, asking for its return in songs. <br>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#用法>用法</a>
+<ol>
+<li><a href=#初始化-context>初始化 context</a></li>
+<li><a href=#valuectx>valueCtx</a></li>
+<li><a href=#cancelctx>cancelCtx</a></li>
+<li><a href=#timerctx>timerCtx</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>

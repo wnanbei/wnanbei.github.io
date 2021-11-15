@@ -1,0 +1,393 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Gin 获取客户端发送请求的各种路由、URL、Post 表单、header 等数据，或者将这些数据绑定到模型中。
+"><title>Gin 获取请求数据</title>
+<link rel=canonical href=https://wnanbei.github.io/post/gin-%E8%8E%B7%E5%8F%96%E8%AF%B7%E6%B1%82%E6%95%B0%E6%8D%AE/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Gin 获取请求数据">
+<meta property="og:description" content="Gin 获取客户端发送请求的各种路由、URL、Post 表单、header 等数据，或者将这些数据绑定到模型中。
+">
+<meta property="og:url" content="https://wnanbei.github.io/post/gin-%E8%8E%B7%E5%8F%96%E8%AF%B7%E6%B1%82%E6%95%B0%E6%8D%AE/">
+<meta property="og:site_name" content="WNANBEI">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:tag" content="Gin"><meta property="article:published_time" content="2020-08-05T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-09T23:34:24+08:00">
+<meta name=twitter:title content="Gin 获取请求数据">
+<meta name=twitter:description content="Gin 获取客户端发送请求的各种路由、URL、Post 表单、header 等数据，或者将这些数据绑定到模型中。
+">
+<link rel="shortcut icon" href=img/avatar.jpg>
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/go%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93/>
+Go第三方库
+</a>
+</header>
+<h2 class=article-title>
+<a href=/post/gin-%E8%8E%B7%E5%8F%96%E8%AF%B7%E6%B1%82%E6%95%B0%E6%8D%AE/>Gin 获取请求数据</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2020-08-05</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 4 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>Gin 获取客户端发送请求的各种路由、URL、Post 表单、header 等数据，或者将这些数据绑定到模型中。</p>
+<h2 id=直接获取>直接获取</h2>
+<h3 id=路由参数>路由参数</h3>
+<p>Gin 可以直接使用 <code>Param()</code> 方法或者 <code>Params</code> 字段获取路由中的参数：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>Param</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>string</span>
+
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Params</span> []<span style=color:#a6e22e>Param</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>ps</span> <span style=color:#a6e22e>Params</span>) <span style=color:#a6e22e>ByName</span>(<span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>) (<span style=color:#a6e22e>va</span> <span style=color:#66d9ef>string</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>ps</span> <span style=color:#a6e22e>Params</span>) <span style=color:#a6e22e>Get</span>(<span style=color:#a6e22e>name</span> <span style=color:#66d9ef>string</span>) (<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>)
+</code></pre></div><p>例子：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/user/:name/*action&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+    <span style=color:#a6e22e>name</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Param</span>(<span style=color:#e6db74>&#34;name&#34;</span>)
+    <span style=color:#a6e22e>action</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Param</span>(<span style=color:#e6db74>&#34;action&#34;</span>)
+})
+
+<span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/user/:id&#34;</span>,<span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>){
+    <span style=color:#a6e22e>id</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Params</span>.<span style=color:#a6e22e>Get</span>(<span style=color:#e6db74>&#34;id&#34;</span>)
+    <span style=color:#a6e22e>id</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>Params</span>.<span style=color:#a6e22e>ByName</span>(<span style=color:#e6db74>&#34;id&#34;</span>)
+})
+</code></pre></div><h3 id=url-参数>url 参数</h3>
+<ol>
+<li>
+<p>获取单个参数</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>GetQuery</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) (<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>Query</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>string</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>DefaultQuery</span>(<span style=color:#a6e22e>key</span>, <span style=color:#a6e22e>defaultValue</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>string</span>
+</code></pre></div></li>
+<li>
+<p>获取数组</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>GetQueryArray</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) ([]<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>QueryArray</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) []<span style=color:#66d9ef>string</span>
+</code></pre></div><p>例子：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/user&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+    <span style=color:#a6e22e>ids</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>QueryArray</span>(<span style=color:#e6db74>&#34;id&#34;</span>)
+    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#ae81ff>200</span>,<span style=color:#a6e22e>ids</span>)
+})
+<span style=color:#75715e>// 请求：http://localhost:8080/user?id=10&amp;id=11&amp;id=12
+</span><span style=color:#75715e>// 响应：[&#34;10&#34;,&#34;11&#34;,&#34;12&#34;]
+</span></code></pre></div></li>
+<li>
+<p>获取 Map</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>QueryMap</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>GetQueryMap</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) (<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>)
+</code></pre></div><p>例子：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/user&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+    <span style=color:#a6e22e>ids</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>QueryMap</span>(<span style=color:#e6db74>&#34;ids&#34;</span>)
+    <span style=color:#75715e>//ids, err := c.GetQueryMap(&#34;ids&#34;)
+</span><span style=color:#75715e></span>    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#ae81ff>200</span>,<span style=color:#a6e22e>ids</span>)
+})
+<span style=color:#75715e>// 请求：http://localhost:8080/user?ids[10]=zhang
+</span><span style=color:#75715e>// 响应：{&#34;10&#34;:&#34;zhang&#34;}
+</span></code></pre></div></li>
+</ol>
+<h3 id=post-表单>Post 表单</h3>
+<p>以下方法，只能获取 <code>Content-type</code> 是 <code>application/x-www-form-urlencoded</code> 或 <code>multipart/form-data</code> 时 <code>body</code> 中的数据。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>PostForm</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>string</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>DefaultPostForm</span>(<span style=color:#a6e22e>key</span>, <span style=color:#a6e22e>defaultValue</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>string</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>PostFormArray</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) []<span style=color:#66d9ef>string</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>PostFormMap</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>GetPostForm</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) (<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>GetPostFormArray</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) ([]<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>)
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>GetPostFormMap</span>(<span style=color:#a6e22e>key</span> <span style=color:#66d9ef>string</span>) (<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>string</span>]<span style=color:#66d9ef>string</span>, <span style=color:#66d9ef>bool</span>)
+</code></pre></div><p>例子：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>POST</span>(<span style=color:#e6db74>&#34;/form_post&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+    <span style=color:#a6e22e>message</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>PostForm</span>(<span style=color:#e6db74>&#34;message&#34;</span>)
+    <span style=color:#a6e22e>nick</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>DefaultPostForm</span>(<span style=color:#e6db74>&#34;nick&#34;</span>, <span style=color:#e6db74>&#34;anonymous&#34;</span>)
+})
+</code></pre></div><h3 id=原始数据>原始数据</h3>
+<p>如果需要获取请求 body 中的原始数据，可以使用此方法</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>GetRawData</span>() ([]<span style=color:#66d9ef>byte</span>, <span style=color:#66d9ef>error</span>)
+</code></pre></div><h2 id=绑定-model>绑定 Model</h2>
+<p>Gin 提供了两类方法来绑定 Model，分别是：</p>
+<ul>
+<li><code>Bind</code>，<code>BindUri</code>，<code>BindQuery</code>，<code>BindJSON</code>，<code>BindXML</code>，<code>BindYAML</code></li>
+<li><code>ShouldBind</code>，<code>ShouldBindUri</code>，<code>ShouldBindQuery</code>，<code>ShouldBindJSON</code>，<code>ShouldBindXML</code>，<code>ShouldBindYAML</code></li>
+</ul>
+<p>他们的区别是，Bind 类型的方法，如果绑定发生异常，那么请求会被 <code>c.AbortWithError(400, err).SetType(ErrorTypeBind)</code> 拒绝，这会将响应状态码设置为 400 并且将 <code>Content-Type</code> 设置为 <code>text/plain; charset=utf-8</code>。</p>
+<p>而 Should 类型方法，如果绑定发生异常，那么将会返回异常，由开发者来负责处理。</p>
+<p>绑定的 Model 需要几个参数来分别设置字段类型</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Login</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>User</span>     <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`form:&#34;user&#34; json:&#34;user&#34; binding:&#34;required&#34;`</span>
+    <span style=color:#a6e22e>Password</span> <span style=color:#66d9ef>string</span> <span style=color:#e6db74>`form:&#34;password&#34; json:&#34;password&#34; binding:&#34;required&#34;`</span>
+}
+</code></pre></div><ul>
+<li><code>form</code> - 用于 url 参数或者 post 表单</li>
+<li><code>json</code> - 用于 Json 绑定</li>
+<li><code>xml</code> - 用于 xml 绑定</li>
+<li><code>time_format</code> - 用于 time.Time 字段的格式</li>
+<li><code>binding</code>
+<ul>
+<li><code>required</code> - 要求此参数为必要参数</li>
+<li><code>-</code> - 表示不绑定此参数</li>
+</ul>
+</li>
+</ul>
+<h3 id=binduri>BindUri</h3>
+<p>BindUri 用于绑定路由路径参数。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>User</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>Uid</span>      <span style=color:#66d9ef>int</span>
+    <span style=color:#a6e22e>Username</span> <span style=color:#66d9ef>string</span>
+}
+
+<span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/bind/:uid/username&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>u</span> <span style=color:#a6e22e>User</span>
+    <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>BindUri</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>u</span>)
+    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>err</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>{
+        <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#ae81ff>200</span>,<span style=color:#a6e22e>u</span>)
+    }
+})
+<span style=color:#75715e>// 请求：http://localhost:8080/bind/1/小张
+</span><span style=color:#75715e>// 输入：{1,&#34;小张&#34;}
+</span></code></pre></div><h3 id=bindquery>BindQuery</h3>
+<p>BindQuery 方法将会只绑定 url 参数，忽略 Post 表单。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>GET</span>(<span style=color:#e6db74>&#34;/bind&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>u</span> <span style=color:#a6e22e>User</span>
+    <span style=color:#a6e22e>e</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>BindQuery</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>u</span>)
+    <span style=color:#66d9ef>if</span> <span style=color:#a6e22e>e</span> <span style=color:#f92672>==</span> <span style=color:#66d9ef>nil</span>{
+        <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>JSON</span>(<span style=color:#ae81ff>200</span>,<span style=color:#a6e22e>u</span>)
+    }
+})
+<span style=color:#75715e>// 请求：http://localhost:8080/bind?uid=1&amp;username=小张
+</span><span style=color:#75715e>// 输出：{1,&#34;小张&#34;}
+</span></code></pre></div><h3 id=bind>Bind</h3>
+<p>Bind 方法较为智能，分为以下几种情况：</p>
+<ul>
+<li>如果是 <code>GET</code> 请求，只使用 <code>Form</code> 绑定 url 参数。</li>
+<li>如果是 <code>POST</code> 请求，首先检查 <code>content-type</code> 是否为 <code>JSON</code> 或 <code>XML</code>，然后再使用 <code>Form</code>（<code>form-data</code>）。</li>
+</ul>
+<h3 id=绑定-body>绑定 Body</h3>
+<p>当我们在 <code>HTTP</code> 请求中 <code>Body</code> 设置不同数据格式，需要设置相应头部 <code>Content-Type</code> 的值，比较常用为 <code>json</code>、<code>xml</code>、<code>yaml</code>。</p>
+<p><code>gin.Context</code> 提供下面三个方法绑定对应 Content-type 时 body 中的数据。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>BindJSON</span>(<span style=color:#a6e22e>obj</span> <span style=color:#66d9ef>interface</span>{}) <span style=color:#66d9ef>error</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>BindXML</span>(<span style=color:#a6e22e>obj</span> <span style=color:#66d9ef>interface</span>{}) <span style=color:#66d9ef>error</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>BindYAML</span>(<span style=color:#a6e22e>obj</span> <span style=color:#66d9ef>interface</span>{}) <span style=color:#66d9ef>error</span>
+</code></pre></div><h3 id=绑定特定类型>绑定特定类型</h3>
+<p><code>Gin</code> 框架将数据绑定的操作都封装在 <code>gin/binding</code> 这个包中，下面是 <code>gin/binding包</code> 处理不同 <code>Content-type</code> 提交数据的处理结构体。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>var</span> (
+    <span style=color:#a6e22e>JSON</span>          = <span style=color:#a6e22e>jsonBinding</span>{}
+    <span style=color:#a6e22e>XML</span>           = <span style=color:#a6e22e>xmlBinding</span>{}
+    <span style=color:#a6e22e>Form</span>          = <span style=color:#a6e22e>formBinding</span>{}
+    <span style=color:#a6e22e>Query</span>         = <span style=color:#a6e22e>queryBinding</span>{}
+    <span style=color:#a6e22e>FormPost</span>      = <span style=color:#a6e22e>formPostBinding</span>{}
+    <span style=color:#a6e22e>FormMultipart</span> = <span style=color:#a6e22e>formMultipartBinding</span>{}
+    <span style=color:#a6e22e>ProtoBuf</span>      = <span style=color:#a6e22e>protobufBinding</span>{}
+    <span style=color:#a6e22e>MsgPack</span>       = <span style=color:#a6e22e>msgpackBinding</span>{}
+    <span style=color:#a6e22e>YAML</span>          = <span style=color:#a6e22e>yamlBinding</span>{}
+    <span style=color:#a6e22e>Uri</span>           = <span style=color:#a6e22e>uriBinding</span>{}
+)
+</code></pre></div><p>如果需要绑定指定类型，则可以使用这两个方法。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>BindWith</span>(<span style=color:#a6e22e>obj</span> <span style=color:#66d9ef>interface</span>{}, <span style=color:#a6e22e>b</span> <span style=color:#a6e22e>binding</span>.<span style=color:#a6e22e>Binding</span>) <span style=color:#66d9ef>error</span>
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Context</span>) <span style=color:#a6e22e>MustBindWith</span>(<span style=color:#a6e22e>obj</span> <span style=color:#66d9ef>interface</span>{}, <span style=color:#a6e22e>b</span> <span style=color:#a6e22e>binding</span>.<span style=color:#a6e22e>Binding</span>) <span style=color:#66d9ef>error</span>
+</code></pre></div><p>例子：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#a6e22e>r</span>.<span style=color:#a6e22e>POST</span>(<span style=color:#e6db74>&#34;bind&#34;</span>,<span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>){
+	<span style=color:#a6e22e>u</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>User</span>{}
+	<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>BindWith</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>u</span>, <span style=color:#a6e22e>binding</span>.<span style=color:#a6e22e>JSON</span>)
+    <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>MustBindWith</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>u</span>, <span style=color:#a6e22e>binding</span>.<span style=color:#a6e22e>JSON</span>)
+})
+</code></pre></div><h2 id=文件上传>文件上传</h2>
+<h3 id=单个文件上传>单个文件上传</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+	<span style=color:#a6e22e>router</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Default</span>()
+	<span style=color:#75715e>// 可以给Post表单设置内存限制(默认是32MiB)
+</span><span style=color:#75715e></span>	<span style=color:#75715e>// router.MaxMultipartMemory = 8 &lt;&lt; 20  // 8 MiB
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>POST</span>(<span style=color:#e6db74>&#34;/upload&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+		<span style=color:#75715e>// single file
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>file</span>, <span style=color:#a6e22e>_</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>FormFile</span>(<span style=color:#e6db74>&#34;file&#34;</span>)
+		<span style=color:#a6e22e>log</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Filename</span>)
+
+		<span style=color:#75715e>// 上传文件到指定的dst.
+</span><span style=color:#75715e></span>		<span style=color:#75715e>// c.SaveUploadedFile(file, dst)
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>String</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Sprintf</span>(<span style=color:#e6db74>&#34;&#39;%s&#39; uploaded!&#34;</span>, <span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Filename</span>))
+	})
+	<span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>Run</span>(<span style=color:#e6db74>&#34;:8080&#34;</span>)
+}
+</code></pre></div><p>注意：<code>file.Filename</code> 不应该被信任，需要去除路径信息，并且转换成服务的文件系统规则。</p>
+<h3 id=多个文件上传>多个文件上传</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+	<span style=color:#a6e22e>router</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Default</span>()
+	<span style=color:#75715e>// 可以给Post表单设置内存限制(默认是32MiB)
+</span><span style=color:#75715e></span>	<span style=color:#75715e>// router.MaxMultipartMemory = 8 &lt;&lt; 20  // 8 MiB
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>POST</span>(<span style=color:#e6db74>&#34;/upload&#34;</span>, <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>c</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>gin</span>.<span style=color:#a6e22e>Context</span>) {
+		<span style=color:#75715e>// Multipart form
+</span><span style=color:#75715e></span>		<span style=color:#a6e22e>form</span>, <span style=color:#a6e22e>_</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>MultipartForm</span>()
+		<span style=color:#a6e22e>files</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>form</span>.<span style=color:#a6e22e>File</span>[<span style=color:#e6db74>&#34;upload[]&#34;</span>]
+
+		<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>_</span>, <span style=color:#a6e22e>file</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>files</span> {
+			<span style=color:#a6e22e>log</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>file</span>.<span style=color:#a6e22e>Filename</span>)
+
+			<span style=color:#75715e>// 上传文件到指定的dst.
+</span><span style=color:#75715e></span>			<span style=color:#75715e>// c.SaveUploadedFile(file, dst)
+</span><span style=color:#75715e></span>		}
+		<span style=color:#a6e22e>c</span>.<span style=color:#a6e22e>String</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>StatusOK</span>, <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Sprintf</span>(<span style=color:#e6db74>&#34;%d files uploaded!&#34;</span>, len(<span style=color:#a6e22e>files</span>)))
+	})
+	<span style=color:#a6e22e>router</span>.<span style=color:#a6e22e>Run</span>(<span style=color:#e6db74>&#34;:8080&#34;</span>)
+}
+</code></pre></div>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/go/>Go</a>
+<a href=/tags/gin/>Gin</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+<section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>
+最后更新于 2021-11-09 23:34:24
+</span>
+</section></footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/post/gin-%E5%90%AF%E5%8A%A8%E4%B8%8E%E9%85%8D%E7%BD%AE/>
+<div class=article-details>
+<h2 class=article-title>Gin 启动与配置</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/gin-%E8%AE%BE%E7%BD%AE-middleware-%E4%B8%AD%E9%97%B4%E4%BB%B6/>
+<div class=article-details>
+<h2 class=article-title>Gin 设置 Middleware 中间件</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/gin-%E8%AF%B7%E6%B1%82%E4%B8%8E%E8%B7%AF%E7%94%B1/>
+<div class=article-details>
+<h2 class=article-title>Gin 请求与路由</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/gin-%E8%BF%94%E5%9B%9E%E5%93%8D%E5%BA%94%E6%96%B9%E5%BC%8F/>
+<div class=article-details>
+<h2 class=article-title>Gin 返回响应方式</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/gin-%E9%85%8D%E7%BD%AE-swagger-%E6%8E%A5%E5%8F%A3%E6%96%87%E6%A1%A3/>
+<div class=article-details>
+<h2 class=article-title>Gin 配置 Swagger 接口文档</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 WNANBEI
+</section>
+<section class=powerby>
+The world has kissed my soul with its pain, asking for its return in songs. <br>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#直接获取>直接获取</a>
+<ol>
+<li><a href=#路由参数>路由参数</a></li>
+<li><a href=#url-参数>url 参数</a></li>
+<li><a href=#post-表单>Post 表单</a></li>
+<li><a href=#原始数据>原始数据</a></li>
+</ol>
+</li>
+<li><a href=#绑定-model>绑定 Model</a>
+<ol>
+<li><a href=#binduri>BindUri</a></li>
+<li><a href=#bindquery>BindQuery</a></li>
+<li><a href=#bind>Bind</a></li>
+<li><a href=#绑定-body>绑定 Body</a></li>
+<li><a href=#绑定特定类型>绑定特定类型</a></li>
+</ol>
+</li>
+<li><a href=#文件上传>文件上传</a>
+<ol>
+<li><a href=#单个文件上传>单个文件上传</a></li>
+<li><a href=#多个文件上传>多个文件上传</a></li>
+</ol>
+</li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>
