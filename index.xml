@@ -3,24 +3,24 @@
 &lt;blockquote>
 &lt;p>一个测试工程师走进一家酒吧，要了一杯啤酒；&lt;/p>
 &lt;p>一个测试工程师走进一家酒吧，要了一杯咖啡；&lt;/p>
-&lt;p>一个测试工程师走进一家酒吧，要了-1杯啤酒；&lt;/p>
-&lt;p>一个测试工程师走进一家酒吧，要了一份asdfQwer@24dg!&amp;amp;*(@；&lt;/p>
+&lt;p>一个测试工程师走进一家酒吧，要了 -1 杯啤酒；&lt;/p>
+&lt;p>一个测试工程师走进一家酒吧，要了一份 asdfQwer@24dg!&amp;amp;*(@；&lt;/p>
 &lt;p>一个测试工程师走进一家酒吧，什么也没要；&lt;/p>
 &lt;p>一个测试工程师走进一家酒吧，又走出去又进来又出去又进来又出去，最后在外面把老板打了一顿；&lt;/p>
-&lt;p>一个测试工程师走进一家酒吧，要了NaN杯Null；&lt;/p>
-&lt;p>一个测试工程师冲进一家酒吧，要了500吨啤酒；&lt;/p>
+&lt;p>一个测试工程师走进一家酒吧，要了 NaN 杯 Null；&lt;/p>
+&lt;p>一个测试工程师冲进一家酒吧，要了 500 吨啤酒；&lt;/p>
 &lt;p>一个测试工程师把酒吧拆了；&lt;/p>
-&lt;p>一个测试工程师化装成老板走进一家酒吧，要了500杯啤酒并且不付钱；&lt;/p>
+&lt;p>一个测试工程师化装成老板走进一家酒吧，要了 500 杯啤酒并且不付钱；&lt;/p>
 &lt;p>一万个测试工程师在酒吧门外呼啸而过；&lt;/p>
 &lt;p>&lt;strong>测试工程师们满意地离开了酒吧。&lt;/strong>&lt;/p>
 &lt;p>&lt;strong>然后一名顾客点了一份炒饭，酒吧炸了。&lt;/strong>&lt;/p>
 &lt;/blockquote>
-&lt;p>这就是今天的主题，&lt;del>如何避免酒吧爆炸&lt;/del> 防御性编程。类似的概念有防御性驾驶、防御性专利。&lt;/p>
-&lt;h2 id="防御性编程的特点">防御性编程的特点&lt;/h2>
+&lt;p>这就是今天的主题， &lt;del>如何避免酒吧爆炸&lt;/del> 防御性编程。类似的概念有防御性驾驶、防御性专利。&lt;/p>
+&lt;h2 id="防御性编程的概念">防御性编程的概念&lt;/h2>
 &lt;h3 id="不信任原则">不信任原则&lt;/h3>
 &lt;p>软件开发的不信任原则，保持 overly pessimistic（过于悲观），把和程序有关的一切请求、服务、接口、返回值、机器、框架、中间件等等都当做不可信的，步步为营、处处设防。&lt;/p>
-&lt;h3 id="边界和场景">*边界和场景&lt;/h3>
-&lt;p>&lt;strong>边界：&lt;/strong>&lt;/p>
+&lt;p>我们常常提到的程序的高可用概念，其实也基于不信任原则，不信任各种软件程序、硬件设施的可用性，而使用备份、多副本等方法来提高整体系统的可用性。&lt;/p>
+&lt;h3 id="边界和场景">边界和场景&lt;/h3>
 &lt;ul>
 &lt;li>&lt;strong>用户端的输入和操作&lt;/strong>&lt;/li>
 &lt;li>&lt;strong>网络环境&lt;/strong>&lt;/li>
@@ -29,28 +29,22 @@
 &lt;li>第三方包&lt;/li>
 &lt;li>同事写的代码&lt;/li>
 &lt;li>自己写的代码&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>场景：&lt;/strong>&lt;/p>
-&lt;ul>
 &lt;li>非常规操作，如：高频点击、非流程操作&lt;/li>
 &lt;/ul>
 &lt;h3 id="缺点">缺点&lt;/h3>
 &lt;ul>
-&lt;li>部分性能损失。&lt;/li>
-&lt;li>健壮性的损失。&lt;/li>
-&lt;li>代码可读性的损失。&lt;/li>
-&lt;li>开发时间的损耗（不一定）。&lt;/li>
+&lt;li>部分性能损失&lt;/li>
+&lt;li>代码可读性的损失&lt;/li>
+&lt;li>开发时间的损耗（不一定）&lt;/li>
 &lt;/ul>
 &lt;h3 id="优点">优点&lt;/h3>
 &lt;ul>
-&lt;li>尽早发现较小的问题，而不是等到它们发展成大的灾难的时候才发现。&lt;/li>
-&lt;li>节省大量调试时间。&lt;/li>
-&lt;li>避免异常逻辑的传导，明确异常原因与位置。&lt;/li>
-&lt;li>避免了大量安全性问题，防范部分恶意的滥用。&lt;/li>
+&lt;li>尽早发现较小的问题，而不是等到它们发展成大的灾难的时候才发现&lt;/li>
+&lt;li>节省大量调试时间&lt;/li>
+&lt;li>避免异常逻辑的传导，明确异常原因与位置&lt;/li>
+&lt;li>避免了大量安全性问题，防范部分恶意的滥用&lt;/li>
+&lt;li>提高程序的健壮性&lt;/li>
 &lt;/ul>
-&lt;h3 id="健壮性与正确性的平衡">*健壮性与正确性的平衡&lt;/h3>
-&lt;p>正确性（correctness）意味着永不返回不准确的结果，哪怕不返回结果也比返回不准确的结果好。&lt;/p>
-&lt;p>健壮性（robustness）意味着要不断尝试采取某些措施，以保证软件可以持续地运转下去，哪怕有时得出一些不够准确的结果。&lt;/p>
 &lt;h2 id="实践场景">实践场景&lt;/h2>
 &lt;h3 id="良好的编程风格和合理的设计">良好的编程风格和合理的设计&lt;/h3>
 &lt;p>良好的编程风格、合理的结构设计可以使编码变得更加清晰明了，很轻松的将大部分可能发生的问题消弥在无形之中。&lt;/p>
@@ -186,11 +180,11 @@
 &lt;a href="https://wnanbei.github.io/images/go/%e9%9a%94%e7%a6%bb%e7%a8%8b%e5%ba%8f.png" >
 &lt;img src="https://wnanbei.github.io/images/go/%e9%9a%94%e7%a6%bb%e7%a8%8b%e5%ba%8f.png"
 loading="lazy"
-alt="/images/go/隔离程序.png">
+alt="隔离程序">
 &lt;/a>
-&lt;figcaption>/images/go/隔离程序.png&lt;/figcaption>
+&lt;figcaption>隔离程序&lt;/figcaption>
 &lt;/figure>&lt;/p>
-&lt;p>以下位置就是常见的高危场景：&lt;/p>
+&lt;p>以下位置是一些常见的高危场景：&lt;/p>
 &lt;ul>
 &lt;li>外部输入&lt;/li>
 &lt;li>调用接口&lt;/li>
