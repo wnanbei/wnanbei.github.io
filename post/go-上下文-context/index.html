@@ -12,7 +12,7 @@
 <meta name=twitter:title content="Go 上下文 context">
 <meta name=twitter:description content="context 指的是上下文，以下是几种 ctx 类型:
  emptyCtx - 所有 ctx 类型的根，用 context.TODO()，或 context.Background() 来生成。 valueCtx - 主要就是为了在 ctx 中嵌入上下文数据，一个简单的 k 和 v 结构，同一个 ctx 内只支持一对 kv，需要更多的 kv 的话，会形成一棵树形结构。 cancelCtx - 用来取消程序的执行树，一般用 WithCancel，WithTimeout，WithDeadline 返回的取消函数本质上都是对应了 cancelCtx。 timerCtx - 在 cancelCtx 上包了一层，支持基于时间的 cancel。 ">
-<link rel="shortcut icon" href=images/avatar.jpg>
+<link rel="shortcut icon" href=images/favicon.jpg>
 </head>
 <body class="article-page has-toc">
 <script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
