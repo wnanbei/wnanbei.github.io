@@ -1,0 +1,275 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Redis 在 centos 系统下的安装配置流程。
+"><title>Redis 安装配置</title>
+<link rel=canonical href=https://wnanbei.github.io/post/redis-%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Redis 安装配置">
+<meta property="og:description" content="Redis 在 centos 系统下的安装配置流程。
+">
+<meta property="og:url" content="https://wnanbei.github.io/post/redis-%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/">
+<meta property="og:site_name" content="WNANBEI">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Database"><meta property="article:tag" content="Redis"><meta property="article:published_time" content="2021-06-06T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-09T13:51:30+08:00">
+<meta name=twitter:title content="Redis 安装配置">
+<meta name=twitter:description content="Redis 在 centos 系统下的安装配置流程。
+">
+<link rel="shortcut icon" href=img/avatar.jpg>
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/redis/>
+Redis
+</a>
+</header>
+<h2 class=article-title>
+<a href=/post/redis-%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/>Redis 安装配置</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2021-06-06</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 2 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>Redis 在 centos 系统下的安装配置流程。</p>
+<h2 id=安装>安装</h2>
+<ul>
+<li>
+<p>首先我们需要安装基础的依赖包。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo yum install -y gcc gcc-c++ make jemalloc-devel epel-release
+</code></pre></div></li>
+<li>
+<p>然后使用<code>wget</code>从官网下载最新版本的<code>Redis</code>，目前的最新版是<code>4.0.11</code>。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>wget http://download.redis.io/releases/redis-4.0.11.tar.gz
+</code></pre></div><p>如果想要下载其他版本的话，修改连接中的版本即可。</p>
+</li>
+<li>
+<p>接下来解压压缩包</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo tar -zvxf redis-4.0.11.tar.gz
+</code></pre></div></li>
+<li>
+<p>进入到解压出来的目录中，由于<code>redis</code>提供的是已经编译完成的版本，所以直接<code>make install</code>安装即可。</p>
+<p>当然也可以在安装时通过<code>PREFIX</code>参数指定安装的位置。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>cd redis-4.0.11
+sudo make PREFIX<span style=color:#f92672>=</span>/usr/local/redis install
+</code></pre></div></li>
+</ul>
+<p>这些步骤完成之后，将会在指定的文件夹中出现<code>redis</code>的服务端和客户端文件。</p>
+<h2 id=配置>配置</h2>
+<p><code>redis</code>安装完毕之后，我们还需要对其做一系列的配置。</p>
+<h3 id=开机启动>开机启动</h3>
+<p>在一开始解压的安装文件夹中，有一个<code>redis.conf</code>配置文件，首先我们先在<code>/etc</code>中新建一个文件夹：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo mkdir /etc/redis
+</code></pre></div><p>然后将<code>redis.conf</code>复制到这个文件夹中去。</p>
+<p>为了方便使用<code>Redis</code>，我们可以把<code>Redis</code>配置成系统服务，来支持开机启动。</p>
+<ul>
+<li>
+<p>首先，创建一个服务文件。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo vim /usr/lib/systemd/system/redis-server.service
+</code></pre></div></li>
+<li>
+<p>然后在这个文件中添加以下内容，里面的内容需要根据你安装的<code>Redis</code>版本和路径进行修改。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#f92672>[</span>Unit<span style=color:#f92672>]</span>
+Description<span style=color:#f92672>=</span>Redis Server
+After<span style=color:#f92672>=</span>network.target
+
+<span style=color:#f92672>[</span>Service<span style=color:#f92672>]</span>
+ExecStart<span style=color:#f92672>=</span>/usr/local/redis/bin/redis-server /etc/redis/redis.conf --daemonize no
+ExecStop<span style=color:#f92672>=</span>/usr/local/redis/bin/redis-cli -p <span style=color:#ae81ff>6379</span> shutdown
+Restart<span style=color:#f92672>=</span>always
+
+<span style=color:#f92672>[</span>Install<span style=color:#f92672>]</span>
+WantedBy<span style=color:#f92672>=</span>multi-user.target
+</code></pre></div></li>
+<li>
+<p>最后，我们把这个redis服务设置成开机启动。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo systemctl enable redis-server
+</code></pre></div></li>
+<li>
+<p>需要马上打开redis服务可以使用以下命令</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo systemctl start redis-server
+</code></pre></div></li>
+</ul>
+<h3 id=远程连接>远程连接</h3>
+<p>由于Redis在安装完成后是默认禁止远程连接的，所以如果需要的话，我们需要开启远程连接。</p>
+<p>首先打开<code>Redis</code>的配置文件：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo vim /etc/redis/redis.conf
+</code></pre></div><p>然后找到其中<code>bind 127.0.0.1</code>这一行，将其注释，或者修改为<code>bind 0.0.0.0</code>。</p>
+<h3 id=密码>密码</h3>
+<p><code>Redis</code>提供了一个轻量级的认证方式，可以让我们在<code>redis.conf</code>中配置密码。</p>
+<p>同样的还是在<code>redis.conf</code>文件中，我们需要找到<code>requirepass</code>这一行，这个参数就是密码。将这一行取消注释，然后将你的密码写在这里，例如：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>requirepass pwd123
+</code></pre></div><p>保存退出后，我们需要重启<code>Redis</code>服务。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo systemctl restart redis-server
+</code></pre></div><p>之后，我们打开客户端的时候需要这样验证密码：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>redis-cli -a pwd123
+</code></pre></div><p>或者在进入客户端之后再验证密码：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>redis-cli
+redis 127.0.0.1:6379&gt; auth pwd123
+</code></pre></div><h2 id=启动测试>启动测试</h2>
+<p>安装以及配置完毕之后，我们需要在安装目录下检测一下安装是否成功。</p>
+<ul>
+<li>
+<p>首先为<code>redis-cli</code>制作一个软连接放到<code>/usr/bin</code>目录中，方便使用。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>ln -s /usr/local/redi/bin/redis-cli /usr/bin/redis-cli
+</code></pre></div></li>
+<li>
+<p>启动<code>redis-server</code>服务。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo systemctl start redis-server
+</code></pre></div></li>
+<li>
+<p>然后我们需要新开一个终端来测试<code>redis</code>客户端是否能启动。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash>sudo redis-cli
+</code></pre></div></li>
+</ul>
+<p>如果这几个步骤都能够正常使用的话，那么我们的<code>redis</code>就安装成功了。</p>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/database/>Database</a>
+<a href=/tags/redis/>Redis</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span>
+</section>
+<section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>
+最后更新于 2021-11-09 13:51:30
+</span>
+</section></footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/post/redis-%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>
+<div class=article-details>
+<h2 class=article-title>Redis 底层数据结构</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/redis-%E7%BC%93%E5%AD%98%E4%B8%8E%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5/>
+<div class=article-details>
+<h2 class=article-title>Redis 缓存与淘汰策略</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/redis-%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/>
+<div class=article-details>
+<h2 class=article-title>Redis 使用规范</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/redis-%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96%E7%AD%96%E7%95%A5/>
+<div class=article-details>
+<h2 class=article-title>Redis 数据持久化策略</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/redis-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/>
+<div class=article-details>
+<h2 class=article-title>Redis 数据类型</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 WNANBEI
+</section>
+<section class=powerby>
+The world has kissed my soul with its pain, asking for its return in songs. <br>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#安装>安装</a></li>
+<li><a href=#配置>配置</a>
+<ol>
+<li><a href=#开机启动>开机启动</a></li>
+<li><a href=#远程连接>远程连接</a></li>
+<li><a href=#密码>密码</a></li>
+</ol>
+</li>
+<li><a href=#启动测试>启动测试</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>
