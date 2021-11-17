@@ -33,10 +33,11 @@
 &lt;li>调用自己写的方法&lt;/li>
 &lt;/ul>
 &lt;h3 id="缺点">缺点&lt;/h3>
+&lt;p>但是使⽤防御性编程也并不是毫⽆缺点的，它需要我们做⼀些额外的操作，所以也是有⼀定缺点的:&lt;/p>
 &lt;ul>
 &lt;li>部分性能损失&lt;/li>
 &lt;li>代码可读性的损失&lt;/li>
-&lt;li>开发时间的损耗（不一定）&lt;/li>
+&lt;li>&lt;del>开发时间的损耗&lt;/del>&lt;/li>
 &lt;/ul>
 &lt;h3 id="优点">优点&lt;/h3>
 &lt;ul>
@@ -50,6 +51,13 @@
 &lt;h3 id="良好的编程风格和合理的设计">良好的编程风格和合理的设计&lt;/h3>
 &lt;p>良好的编程风格、合理的结构设计可以使编码变得更加清晰明了，很轻松的将大部分可能发生的问题消弥在无形之中。&lt;/p>
 &lt;p>所以，先思考，后编码会是一个非常良好的习惯，也是防御性编程的基础。&lt;/p>
+&lt;h3 id="好的-api-设计">好的 API 设计&lt;/h3>
+&lt;p>这里的 API 不仅指的是我们的 Restful api 接口，也指的是我们内部代码的方法 API。&lt;/p>
+&lt;ul>
+&lt;li>好的 API 易于使用：命名合理、可读性强，输入输出设置合理且扩展性好。&lt;/li>
+&lt;li>好的 API 难以误用：针对各种可能的误用情况进行必要校验并给出可读性强的报错信息提示。&lt;/li>
+&lt;/ul>
+&lt;p>当 API 的设计良好，同时保证了易于使用和难以误用时，自然会大大提高 API 的正确使用率，降低各种因为 API 误用造成的问题。&lt;/p>
 &lt;h3 id="参数验证">参数验证&lt;/h3>
 &lt;p>目前后端遇最需要防御性编程的情况，应该是 api 接口的请求参数需要验证。参数的上下限、数值类型、零值、类型、格式等等都需要进行验证。&lt;/p>
 &lt;p>这些错误有可能来自于用户的错误使用，也可能来自于前端的异常调用，保护我们的程序远离外部的无效数据，可以大大提高程序的稳定性。&lt;/p>
@@ -133,14 +141,7 @@
 &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>, &lt;span style="color:#66d9ef">error&lt;/span>.&lt;span style="color:#a6e22e">New&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;user not exists&amp;#34;&lt;/span>)
 }
 &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">user&lt;/span>.&lt;span style="color:#a6e22e">Department&lt;/span>, &lt;span style="color:#66d9ef">nil&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="好的-api-设计">好的 API 设计&lt;/h3>
-&lt;p>这里的 API 不仅指的是我们的 Restful api 接口，也指的是我们内部代码的方法 API。&lt;/p>
-&lt;ul>
-&lt;li>好的 API 易于使用：命名合理、可读性强，输入输出设置合理且扩展性好。&lt;/li>
-&lt;li>好的 API 难以误用：针对各种可能的误用情况进行必要校验并给出可读性强的报错信息提示。&lt;/li>
-&lt;/ul>
-&lt;p>当 API 的设计良好，同时保证了易于使用和难以误用时，自然会大大提高 API 的正确使用率，降低各种因为 API 误用造成的问题。&lt;/p>
-&lt;h3 id="包变量私有化">包变量私有化&lt;/h3>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="包变量私有化">包变量私有化&lt;/h3>
 &lt;p>不需要被外部使用的包变量，使用首字母小写的私有变量，如果外部需要访问，也尽量使用全局方法提供给外部访问。避免包变量在外部被错误修改，导致程序的异常。&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">const&lt;/span> (
 &lt;span style="color:#a6e22e">env&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;prod&amp;#34;&lt;/span>
@@ -207,6 +208,7 @@
 &lt;h3 id="隔离程序">隔离程序&lt;/h3>
 &lt;p>隔离程序指的是对于防御性编程的灵活调整，毕竟防御性编程始终是有成本的。而&lt;strong>绝对防御&lt;/strong>式编程将消耗大量的精力，造成非常臃肿的代码。&lt;/p>
 &lt;p>所以我们可以将高危、容易出错的地方加上防御性编程代码，而在不容易出错的、内部的位置减少或去掉防御性编程代码。&lt;/p>
+&lt;p>⽽在内部的函数调⽤等地⽅，可以适当的减少防御性代码，但某些关键数据和关键逻辑位置，防御性代码依然是必要的。&lt;/p>
 &lt;p>&lt;figure
 >
 &lt;a href="https://wnanbei.github.io/images/go/%e9%9a%94%e7%a6%bb%e7%a8%8b%e5%ba%8f.png" >
@@ -215,15 +217,72 @@ loading="lazy"
 alt="隔离程序">
 &lt;/a>
 &lt;figcaption>隔离程序&lt;/figcaption>
-&lt;/figure>&lt;/p>
-&lt;p>以下是一些最为常见的高危场景：&lt;/p>
-&lt;ul>
-&lt;li>外部输入&lt;/li>
-&lt;li>调用接口&lt;/li>
-&lt;li>文件访问&lt;/li>
-&lt;li>数据库查询&lt;/li>
+&lt;/figure>&lt;/p></description></item><item><title>MongoDB 索引用法与原理</title><link>https://wnanbei.github.io/post/mongodb-%E7%B4%A2%E5%BC%95%E7%94%A8%E6%B3%95%E4%B8%8E%E5%8E%9F%E7%90%86/</link><pubDate>Wed, 10 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-%E7%B4%A2%E5%BC%95%E7%94%A8%E6%B3%95%E4%B8%8E%E5%8E%9F%E7%90%86/</guid><description>&lt;p>从 MongoDB 3.2 开始，WiredTiger 成为 MongoDB 的默认存储引擎，WiredTiger 引擎使用 B+ 树作为索引的数据结构。&lt;/p>
+&lt;h2 id="用法">用法&lt;/h2>
+&lt;h3 id="创建索引">创建索引&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">test&lt;/span>.&lt;span style="color:#a6e22e">createIndex&lt;/span>( { &lt;span style="color:#a6e22e">key1&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> } )
+&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>1 代表升序&lt;/li>
+&lt;li>-1 代表降序&lt;/li>
 &lt;/ul>
-&lt;p>而在内部的函数调用等地方，可以适当的减少防御性代码，但某些关键数据和关键逻辑位置，防御性代码依然是必要的。&lt;/p></description></item><item><title>MongoDB 索引用法与原理</title><link>https://wnanbei.github.io/post/mongodb-%E7%B4%A2%E5%BC%95%E7%94%A8%E6%B3%95%E4%B8%8E%E5%8E%9F%E7%90%86/</link><pubDate>Wed, 10 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-%E7%B4%A2%E5%BC%95%E7%94%A8%E6%B3%95%E4%B8%8E%E5%8E%9F%E7%90%86/</guid><description/></item><item><title>模板模式 - 设计模式系列（一）</title><link>https://wnanbei.github.io/post/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%80/</link><pubDate>Tue, 09 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%80/</guid><description>&lt;p>模板模式是指抽象类里定义好&lt;strong>算法的执行步骤&lt;/strong>和&lt;strong>具体算法&lt;/strong>，以及可能发生变化的算法定义为&lt;strong>抽象方法&lt;/strong>。不同的子类继承该抽象类，并实现父类的抽象方法。&lt;/p>
+&lt;h3 id="复合索引">复合索引&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">test&lt;/span>.&lt;span style="color:#a6e22e">createIndex&lt;/span>( {&lt;span style="color:#e6db74">&amp;#34;keypart1&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;keypart2&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;keypart3&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>} )
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>MongoDB 的复合索引也需要满足最左匹配原则。&lt;/p>
+&lt;h3 id="多值索引">多值索引&lt;/h3>
+&lt;h3 id="ttl-索引">TTL 索引&lt;/h3>
+&lt;h3 id="部分索引">部分索引&lt;/h3>
+&lt;p>MonogDB 3.2 版本之后开始支持部分索引特性&lt;/p>
+&lt;h2 id="explain">explain&lt;/h2>
+&lt;p>&lt;code>explain&lt;/code> 语句可以用来查看语句的执行计划：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">test&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>({&lt;span style="color:#e6db74">&amp;#34;commonfield&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;THctcu&amp;#34;&lt;/span>}).&lt;span style="color:#a6e22e">explain&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;executionStats&amp;#34;&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="模式">模式&lt;/h3>
+&lt;p>explain 语句有三种模式：&lt;/p>
+&lt;ol>
+&lt;li>&lt;code>queryPlanner&lt;/code> - 默认模式，根据查询优化器的评估，选择一个最佳的查询计划。&lt;/li>
+&lt;li>&lt;code>executionStats&lt;/code> - 根据查询优化器的评估，选择一个最佳的查询计划执行，执行完毕后返回结果的统计信息。
+&lt;ul>
+&lt;li>对于写操作，返回关于更新和删除操作的信息，但是并不将修改应⽤到数据库。&lt;/li>
+&lt;li>对于被拒绝的执⾏计划，不返回其统计信息。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>&lt;code>allPlansExecution&lt;/code> - 按照最佳的执⾏计划执⾏以及列出统计信息，还会列出⼀些候选的执⾏计划。
+&lt;ul>
+&lt;li>如果有多个查询计划 ，executionStats 信息包括这些执⾏计划的部分统计信息。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="字段">字段&lt;/h3>
+&lt;p>explain 返回的信息较多，其中有一些比较重要的字段：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>nReturned&lt;/code> - 实际返回数据行数。&lt;/li>
+&lt;li>&lt;code>executionTimeMills&lt;/code> - 语句执行时间，单位毫秒。&lt;/li>
+&lt;li>&lt;code>totalKeysExamined&lt;/code> - 根据索引扫描的文档数量。&lt;/li>
+&lt;li>&lt;code>totalDocsExamined&lt;/code> - 所有的文档扫描数量，如果与 &lt;code>totalKeysExamined&lt;/code> 数量相同，说明所有扫描都走的索引。&lt;/li>
+&lt;li>&lt;code>stage&lt;/code> - 查询的阶段类型，以下是可能的值：
+&lt;ul>
+&lt;li>COLLSCAN - 全表扫描&lt;/li>
+&lt;li>IXSCAN - 索引扫描&lt;/li>
+&lt;li>FETCH - 根据索引去主键索引查询对应文档&lt;/li>
+&lt;li>SORT - 内存中排序&lt;/li>
+&lt;li>LIMIT - 限制返回文档数量&lt;/li>
+&lt;li>SKIP - 跳过指定条数&lt;/li>
+&lt;li>SHARD_MERGE - 将各个分片返回的数据进行 merge&lt;/li>
+&lt;li>IDHACK - 根据 _id 进行查询&lt;/li>
+&lt;li>COUNT - 进行 count 运算&lt;/li>
+&lt;li>TEXT - 全文索引查询&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="概念与原理">概念与原理&lt;/h2>
+&lt;p>由于 MongoDB 与 MySQL 都使用 B+ 树作为索引的数据结构，所以有一些概念是基本相通的。&lt;/p>
+&lt;h3 id="最左匹配">最左匹配&lt;/h3>
+&lt;p>同 &lt;a class="link" href="https://wnanbei.github.io/post/mysql-%e7%b4%a2%e5%bc%95%e8%af%a6%e8%a7%a3/#%e6%9c%80%e5%b7%a6%e5%89%8d%e7%bc%80" >MySQL 最左匹配&lt;/a>&lt;/p>
+&lt;h3 id="索引下推">索引下推&lt;/h3>
+&lt;p>同 &lt;a class="link" href="https://wnanbei.github.io/post/mysql-%e7%b4%a2%e5%bc%95%e8%af%a6%e8%a7%a3/#%e7%b4%a2%e5%bc%95%e4%b8%8b%e6%8e%a8" >MySQL 索引下推&lt;/a>&lt;/p>
+&lt;h3 id="覆盖索引">覆盖索引&lt;/h3>
+&lt;p>同 &lt;a class="link" href="https://wnanbei.github.io/post/mysql-%e7%b4%a2%e5%bc%95%e8%af%a6%e8%a7%a3/#%e8%a6%86%e7%9b%96%e7%b4%a2%e5%bc%95" >MySQL 覆盖索引&lt;/a>&lt;/p>
+&lt;h3 id="使用索引排序">使用索引排序&lt;/h3>
+&lt;p>索引本身是有序的，所以当 sort 排序条件与索引顺序一致时，sort 可以直接使用索引的查询结果，不需要做额外操作。而如果不能使用索引的顺序，那么额外需要在内存中进行排序操作。&lt;/p></description></item><item><title>模板模式 - 设计模式系列（一）</title><link>https://wnanbei.github.io/post/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%80/</link><pubDate>Tue, 09 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%80/</guid><description>&lt;p>模板模式是指抽象类里定义好&lt;strong>算法的执行步骤&lt;/strong>和&lt;strong>具体算法&lt;/strong>，以及可能发生变化的算法定义为&lt;strong>抽象方法&lt;/strong>。不同的子类继承该抽象类，并实现父类的抽象方法。&lt;/p>
 &lt;p>优势：&lt;/p>
 &lt;ul>
 &lt;li>不变的算法被继承复用：不变的部分高度封装、复用。&lt;/li>
