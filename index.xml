@@ -218,6 +218,8 @@ alt="隔离程序">
 &lt;/a>
 &lt;figcaption>隔离程序&lt;/figcaption>
 &lt;/figure>&lt;/p></description></item><item><title>MongoDB 索引用法与原理</title><link>https://wnanbei.github.io/post/mongodb-%E7%B4%A2%E5%BC%95%E7%94%A8%E6%B3%95%E4%B8%8E%E5%8E%9F%E7%90%86/</link><pubDate>Wed, 10 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-%E7%B4%A2%E5%BC%95%E7%94%A8%E6%B3%95%E4%B8%8E%E5%8E%9F%E7%90%86/</guid><description>&lt;p>从 MongoDB 3.2 开始，WiredTiger 成为 MongoDB 的默认存储引擎，WiredTiger 引擎使用 B+ 树作为索引的数据结构。&lt;/p>
+&lt;p>MongoDB 索引官方中文文档：&lt;a class="link" href="https://docs.mongoing.com/indexes" target="_blank" rel="noopener"
+>MongoDB 索引&lt;/a>&lt;/p>
 &lt;h2 id="用法">用法&lt;/h2>
 &lt;h3 id="创建索引">创建索引&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">test&lt;/span>.&lt;span style="color:#a6e22e">createIndex&lt;/span>( { &lt;span style="color:#a6e22e">key1&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> } )
@@ -228,10 +230,37 @@ alt="隔离程序">
 &lt;h3 id="复合索引">复合索引&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">test&lt;/span>.&lt;span style="color:#a6e22e">createIndex&lt;/span>( {&lt;span style="color:#e6db74">&amp;#34;keypart1&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;keypart2&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;keypart3&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>} )
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>MongoDB 的复合索引也需要满足最左匹配原则。&lt;/p>
-&lt;h3 id="多值索引">多值索引&lt;/h3>
-&lt;h3 id="ttl-索引">TTL 索引&lt;/h3>
+&lt;h3 id="多键索引">多键索引&lt;/h3>
+&lt;p>为了索引包含数组值的字段，MongoDB 为数组中的每个元素创建一个索引键。这些多键索引支持对数组字段的高效查询。多键索引可以在包含标量值(例如字符串、数字)和嵌套文档的数组上构造。&lt;/p>
+&lt;p>创建方式与创建普通索引相同：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">test&lt;/span>.&lt;span style="color:#a6e22e">createIndex&lt;/span>( { &lt;span style="color:#a6e22e">key1&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> } )
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>从 MongoDB 3.4 开始，对于使用 MongoDB 3.4 或更高版本创建的多键索引，MongoDB 会跟踪哪个索引字段或哪些字段导致一个索引成为多键索引。&lt;/p>
+&lt;p>跟踪这些信息可以让 MongoDB 查询引擎使用更紧密的索引边界。&lt;/p>
+&lt;h3 id="唯一索引">唯一索引&lt;/h3>
+&lt;p>创建唯一索引：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">members&lt;/span>.&lt;span style="color:#a6e22e">createIndex&lt;/span>( { &lt;span style="color:#e6db74">&amp;#34;user_id&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> }, { &lt;span style="color:#a6e22e">unique&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span> } )
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>对于一个范围分片集合，只有以下索引可以是唯一的:&lt;/p>
+&lt;ul>
+&lt;li>分片键上的索引。&lt;/li>
+&lt;li>一个复合索引，其中片键是一个前缀。&lt;/li>
+&lt;li>默认 &lt;code>_id&lt;/code> 索引。如果 &lt;code>_id&lt;/code> 字段不是分片键或分片键的前缀，&lt;code>_id&lt;/code> 索引只对每个分片强制唯一性约束，而不是对所有分片强制唯一。&lt;/li>
+&lt;/ul>
 &lt;h3 id="部分索引">部分索引&lt;/h3>
-&lt;p>MonogDB 3.2 版本之后开始支持部分索引特性&lt;/p>
+&lt;p>MonogDB 3.2 版本之后开始支持部分索引特性。&lt;/p>
+&lt;p>部分索引只索引集合中部分文档，部分索引可以降低存储需求，并降低创建和维护索引的性能成本。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">restaurants&lt;/span>.&lt;span style="color:#a6e22e">createIndex&lt;/span>(
+{ &lt;span style="color:#a6e22e">cuisine&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span> },
+{ &lt;span style="color:#a6e22e">partialFilterExpression&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">rating&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$gt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">5&lt;/span> } } }
+)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>部分索引接受以下筛选条件：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>field: value&lt;/code>、&lt;code>$eq&lt;/code>&lt;/li>
+&lt;li>&lt;code>exists: true&lt;/code>&lt;/li>
+&lt;li>&lt;code>$gt&lt;/code>、&lt;code>$gte&lt;/code>、&lt;code>$lt&lt;/code>、&lt;code>$lte&lt;/code>&lt;/li>
+&lt;li>&lt;code>$type&lt;/code>&lt;/li>
+&lt;li>&lt;code>$and&lt;/code> 只在顶层操作符&lt;/li>
+&lt;/ul>
+&lt;p>使用唯一索引和部分索引的 &lt;code>exists:true&lt;/code> 条件，可以让唯一索引在字段存在时才进行索引。&lt;/p>
 &lt;h2 id="explain">explain&lt;/h2>
 &lt;p>&lt;code>explain&lt;/code> 语句可以用来查看语句的执行计划：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">test&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>({&lt;span style="color:#e6db74">&amp;#34;commonfield&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;THctcu&amp;#34;&lt;/span>}).&lt;span style="color:#a6e22e">explain&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;executionStats&amp;#34;&lt;/span>)
@@ -411,7 +440,9 @@ alt="隔离程序">
 &lt;span style="color:#e6db74">&amp;#34;filter&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;lowercase&amp;#34;&lt;/span>],
 &lt;span style="color:#e6db74">&amp;#34;text&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&amp;#34;&lt;/span>
 }
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>MongoDB CRUD 操作</title><link>https://wnanbei.github.io/post/mongodb-crud-%E6%93%8D%E4%BD%9C/</link><pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-crud-%E6%93%8D%E4%BD%9C/</guid><description>&lt;h2 id="query">Query&lt;/h2>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>MongoDB CRUD 操作</title><link>https://wnanbei.github.io/post/mongodb-crud-%E6%93%8D%E4%BD%9C/</link><pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-crud-%E6%93%8D%E4%BD%9C/</guid><description>&lt;p>MongoDB 官方中文文档：&lt;a class="link" href="https://docs.mongoing.com/" target="_blank" rel="noopener"
+>MongoDB中文手册|官方文档中文版&lt;/a>，基于 4.2 版本。&lt;/p>
+&lt;h2 id="query">Query&lt;/h2>
 &lt;h3 id="查询所有数据">查询所有数据&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( {} )
 &lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="条件查询">条件查询&lt;/h3>
