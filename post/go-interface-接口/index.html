@@ -8,7 +8,7 @@
  类型不需要显式声明它实现了某个接口：接口被隐式地实现。 多个类型可以实现同一个接口。 实现某个接口的类型，除了实现接口方法外，可以有其他的方法。 一个类型可以实现多个接口。 接口是动态类型，可以包含一个实例的引用，该实例的类型实现了此接口。 即使接口在类型之后才定义，二者处于不同的包中，被单独编译，只要类型实现了接口中的方法，它就实现了此接口。 接口只能访问接口内声明的方法。 ">
 <meta property="og:url" content="https://wnanbei.github.io/post/go-interface-%E6%8E%A5%E5%8F%A3/">
 <meta property="og:site_name" content="WNANBEI">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:published_time" content="2019-10-01T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-09T23:34:24+08:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:published_time" content="2019-10-01T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-29T10:18:05+08:00">
 <meta name=twitter:title content="Go interface 接口">
 <meta name=twitter:description content="interface 的一些特性：
  类型不需要显式声明它实现了某个接口：接口被隐式地实现。 多个类型可以实现同一个接口。 实现某个接口的类型，除了实现接口方法外，可以有其他的方法。 一个类型可以实现多个接口。 接口是动态类型，可以包含一个实例的引用，该实例的类型实现了此接口。 即使接口在类型之后才定义，二者处于不同的包中，被单独编译，只要类型实现了接口中的方法，它就实现了此接口。 接口只能访问接口内声明的方法。 ">
@@ -200,7 +200,7 @@ Go语法
 </section>
 <section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <span>
-最后更新于 2021-11-09 23:34:24
+最后更新于 2021-11-29 10:18:05
 </span>
 </section></footer>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>

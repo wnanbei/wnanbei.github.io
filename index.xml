@@ -11974,7 +11974,7 @@ alt="img">
 &lt;p>作为开源项目，必须有相应的开源许可证才能算是真正的开源。在选择了一个开源许可证之后，需要在源文件中进行相应的版权声明才能生效。&lt;/p>
 &lt;h3 id="apache-license-version-20">Apache License Version 2.0&lt;/h3>
 &lt;p>该许可证要求在所有的源文件中的头部放置以下内容才能算协议对该文件有效。&lt;/p>
-&lt;pre tabindex="0">&lt;code>// Copyright [yyyy] [name of copyright owner]
+&lt;pre tabindex="0">&lt;code class="language-License" data-lang="License">// Copyright [yyyy] [name of copyright owner]
 //
 // Licensed under the Apache License, Version 2.0 (the &amp;quot;License&amp;quot;): you may
 // not use this file except in compliance with the License. You may obtain
@@ -11991,7 +11991,7 @@ alt="img">
 &lt;p>&lt;code>[name of copyright owner]&lt;/code>，即版权所有者。如果为个人项目，就写个人名称。若为团队项目，则宜写团队名称。&lt;/p>
 &lt;h3 id="mit-license">MIT License&lt;/h3>
 &lt;p>使用 MIT 授权的项目，需在源文件头部增加以下内容。&lt;/p>
-&lt;pre tabindex="0">&lt;code>// Copyright [yyyy] [name of copyright owner]. All rights reserved.
+&lt;pre tabindex="0">&lt;code class="language-License" data-lang="License">// Copyright [yyyy] [name of copyright owner]. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 &lt;/code>&lt;/pre>&lt;p>年份和版权所有者的名称填写规则与 Apache License Version 2.0 的一样。&lt;/p></description></item><item><title>HTTP网络协议</title><link>https://wnanbei.github.io/post/http%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/</link><pubDate>Sat, 06 Jan 2018 16:17:25 +0000</pubDate><guid>https://wnanbei.github.io/post/http%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/</guid><description>&lt;p>&lt;code>HTTP（HyperText Transfer Protocol）&lt;/code>，意为超文本传输协议，是目前互联网上应用最为广泛的一种网络协议。目前使用最普遍的一个版本是HTTP 1.1。&lt;/p>
