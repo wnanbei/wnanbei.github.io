@@ -440,28 +440,28 @@ alt="隔离程序">
 &lt;span style="color:#e6db74">&amp;#34;filter&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;lowercase&amp;#34;&lt;/span>],
 &lt;span style="color:#e6db74">&amp;#34;text&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;2 running Quick brown-foxes leap over lazy dogs in the summer evening.&amp;#34;&lt;/span>
 }
-&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>MongoDB CRUD 操作</title><link>https://wnanbei.github.io/post/mongodb-crud-%E6%93%8D%E4%BD%9C/</link><pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-crud-%E6%93%8D%E4%BD%9C/</guid><description>&lt;p>MongoDB 官方中文文档：&lt;a class="link" href="https://docs.mongoing.com/" target="_blank" rel="noopener"
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>MongoDB find 查询</title><link>https://wnanbei.github.io/post/mongodb-find-%E6%9F%A5%E8%AF%A2/</link><pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-find-%E6%9F%A5%E8%AF%A2/</guid><description>&lt;p>MongoDB find 数据查询命令。&lt;/p>
+&lt;p>MongoDB 官方中文文档：&lt;a class="link" href="https://docs.mongoing.com/" target="_blank" rel="noopener"
 >MongoDB中文手册|官方文档中文版&lt;/a>，基于 4.2 版本。&lt;/p>
-&lt;h2 id="query">Query&lt;/h2>
-&lt;h3 id="查询所有数据">查询所有数据&lt;/h3>
+&lt;h2 id="查询所有数据">查询所有数据&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( {} )
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="条件查询">条件查询&lt;/h3>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="条件查询">条件查询&lt;/h2>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;D&amp;#34;&lt;/span> } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>IN&lt;/code> 查询：&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="in">IN&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$in&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [ &lt;span style="color:#e6db74">&amp;#34;A&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;D&amp;#34;&lt;/span> ] } } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>AND&lt;/code> 查询：&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="and">AND&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( {
 &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;A&amp;#34;&lt;/span>,
 &lt;span style="color:#a6e22e">qty&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$lt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">30&lt;/span> }
 } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>OR&lt;/code> 查询：&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="or">OR&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( {
 &lt;span style="color:#a6e22e">$or&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [
 { &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;A&amp;#34;&lt;/span> },
 { &lt;span style="color:#a6e22e">qty&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$lt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">30&lt;/span> } }
 ]
 } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>AND&lt;/code> 和 &lt;code>IN&lt;/code> 混用：&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="and-和-in-混用">AND 和 IN 混用&lt;/h3>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( {
 &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;A&amp;#34;&lt;/span>,
 &lt;span style="color:#a6e22e">$or&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [
@@ -469,7 +469,22 @@ alt="隔离程序">
 { &lt;span style="color:#a6e22e">item&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">/^p/&lt;/span> }
 ]
 } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="嵌套数据查询">嵌套数据查询&lt;/h3>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="范围查询">范围查询&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">bios&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">birth&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$gt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Date(&lt;span style="color:#e6db74">&amp;#39;1940-01-01&amp;#39;&lt;/span>), &lt;span style="color:#a6e22e">$lt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Date(&lt;span style="color:#e6db74">&amp;#39;1960-01-01&amp;#39;&lt;/span>) } } )
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="返回结果筛选">返回结果筛选&lt;/h2>
+&lt;p>&lt;code>sort&lt;/code>、&lt;code>limit&lt;/code>、&lt;code>skip&lt;/code> 三个命令的顺序不会影响执行的效果。&lt;/p>
+&lt;h3 id="sort">sort&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">bios&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>().&lt;span style="color:#a6e22e">sort&lt;/span>( { &lt;span style="color:#a6e22e">name&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#a6e22e">age&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span> } )
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="limit">limit&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">bios&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>().&lt;span style="color:#a6e22e">limit&lt;/span>( &lt;span style="color:#ae81ff">5&lt;/span> )
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="skip">skip&lt;/h3>
+&lt;p>跳过指定条数数据：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">bios&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>().&lt;span style="color:#a6e22e">skip&lt;/span>( &lt;span style="color:#ae81ff">5&lt;/span> )
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="countdocuments">countDocuments&lt;/h3>
+&lt;p>&lt;code>count&lt;/code> 方法在没有设置 query 条件时，只能返回 collection 在 meta 中的不确切的数量，在 MongoDB 4.0 已被弃用。&lt;/p>
+&lt;p>使用新的 &lt;code>countDocuments&lt;/code> 方法返回确切的数据数量：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">orders&lt;/span>.&lt;span style="color:#a6e22e">countDocuments&lt;/span>( { &lt;span style="color:#a6e22e">ord_dt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$gt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">new&lt;/span> Date(&lt;span style="color:#e6db74">&amp;#39;01/01/2012&amp;#39;&lt;/span>) } }, { &lt;span style="color:#a6e22e">limit&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">100&lt;/span> } )
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="嵌套数据查询">嵌套数据查询&lt;/h2>
 &lt;p>查询数据中嵌套的内容：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( {
 &lt;span style="color:#a6e22e">size&lt;/span>&lt;span style="color:#f92672">:&lt;/span> {
@@ -482,7 +497,7 @@ alt="隔离程序">
 &lt;p>也可以使用 &lt;code>dot&lt;/code> 方式指定嵌套字段：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#e6db74">&amp;#34;size.h&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$lt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">15&lt;/span> } } )
 &lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#e6db74">&amp;#34;size.h&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$lt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">15&lt;/span> }, &lt;span style="color:#e6db74">&amp;#34;size.uom&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;in&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;D&amp;#34;&lt;/span> } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="数组查询">数组查询&lt;/h3>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="数组查询">数组查询&lt;/h2>
 &lt;p>数组完全匹配，包括顺序：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">tags&lt;/span>&lt;span style="color:#f92672">:&lt;/span> [&lt;span style="color:#e6db74">&amp;#34;red&amp;#34;&lt;/span>, &lt;span style="color:#e6db74">&amp;#34;blank&amp;#34;&lt;/span>] } )
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>查询所有数组内包含此条件的数据：&lt;/p>
@@ -495,7 +510,7 @@ alt="隔离程序">
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#e6db74">&amp;#34;dim_cm.1&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$gt&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">25&lt;/span> } } )
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>根据数组长度查询：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#e6db74">&amp;#34;tags&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$size&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">3&lt;/span> } } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="限制查询返回字段">限制查询返回字段&lt;/h3>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="限制查询返回字段">限制查询返回字段&lt;/h2>
 &lt;p>仅返回指定的字段：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>(
 { &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;A&amp;#34;&lt;/span> },
@@ -506,14 +521,17 @@ alt="隔离程序">
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>不返回 &lt;code>_id&lt;/code>:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#e6db74">&amp;#34;A&amp;#34;&lt;/span> }, { &lt;span style="color:#a6e22e">item&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#a6e22e">status&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#a6e22e">_id&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> } )
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>除了 &lt;code>_id&lt;/code> 字段，其他字段不能进行组合。&lt;/p>
-&lt;h3 id="null-值处理">null 值处理&lt;/h3>
+&lt;h2 id="null-值处理">null 值处理&lt;/h2>
 &lt;p>查询所有无此字段或字段值为 &lt;code>null&lt;/code> 的数据：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">item&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">null&lt;/span> } )
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>仅查询字段存在且值为 &lt;code>null&lt;/code> 的数据：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">item&lt;/span> &lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$type&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#ae81ff">10&lt;/span> } } )
 &lt;/code>&lt;/pre>&lt;/div>&lt;p>仅查询字段不存在的数据：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="color:#a6e22e">db&lt;/span>.&lt;span style="color:#a6e22e">inventory&lt;/span>.&lt;span style="color:#a6e22e">find&lt;/span>( { &lt;span style="color:#a6e22e">item&lt;/span> &lt;span style="color:#f92672">:&lt;/span> { &lt;span style="color:#a6e22e">$exists&lt;/span>&lt;span style="color:#f92672">:&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span> } } )
-&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="insert">Insert&lt;/h2>
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>MongoDB 增删改操作</title><link>https://wnanbei.github.io/post/mongodb-%E5%A2%9E%E5%88%A0%E6%94%B9%E6%93%8D%E4%BD%9C/</link><pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/mongodb-%E5%A2%9E%E5%88%A0%E6%94%B9%E6%93%8D%E4%BD%9C/</guid><description>&lt;p>MongoDB 的 Insert、Update、Delete 操作。&lt;/p>
+&lt;p>MongoDB 官方中文文档：&lt;a class="link" href="https://docs.mongoing.com/" target="_blank" rel="noopener"
+>MongoDB中文手册|官方文档中文版&lt;/a>，基于 4.2 版本。&lt;/p>
+&lt;h2 id="insert">Insert&lt;/h2>
 &lt;p>&lt;strong>特性：&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>MongoDB 所有对单条数据的写操作都是原子操作；&lt;/li>
