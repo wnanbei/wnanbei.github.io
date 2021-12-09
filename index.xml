@@ -1,4 +1,64 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WNANBEI</title><link>https://wnanbei.github.io/</link><description>Recent content on WNANBEI</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 07 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://wnanbei.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>建造者模式 - 设计模式系列（三）</title><link>https://wnanbei.github.io/post/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%89/</link><pubDate>Tue, 07 Dec 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%89/</guid><description>&lt;p>建造者模式（Builder Pattern）是一种对象构建模式，是将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>WNANBEI</title><link>https://wnanbei.github.io/</link><description>Recent content on WNANBEI</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 07 Dec 2021 10:00:00 +0000</lastBuildDate><atom:link href="https://wnanbei.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>策略模式 - 设计模式系列（四）</title><link>https://wnanbei.github.io/post/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E5%9B%9B/</link><pubDate>Tue, 07 Dec 2021 10:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E5%9B%9B/</guid><description>&lt;p>策略模式（Strategy Pattern）定义一系列算法，将每一个算法封装起来，并让它们可以相互替换。策略模式让算法独立于使用它的客户而变化，也称为政策模式（Policy）。&lt;/p>
+&lt;h2 id="使用场景">使用场景&lt;/h2>
+&lt;p>在以下情况下可以使用策略模式：&lt;/p>
+&lt;ul>
+&lt;li>如果在一个系统里面有许多类，它们之间的区别仅在于它们的行为，那么使用策略模式可以动态地让一个对象在许多行为中选择一种行为。&lt;/li>
+&lt;li>一个系统需要动态地在几种算法中选择一种。&lt;/li>
+&lt;li>如果一个对象有很多的行为，如果不用恰当的模式，这些行为就只好使用多重的条件选择语句来实现。&lt;/li>
+&lt;li>不希望客户端知道复杂的、与算法相关的数据结构，在具体策略类中封装算法和相关的数据结构，提高算法的保密性与安全性。&lt;/li>
+&lt;/ul>
+&lt;h2 id="示例">示例&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">strategy&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> (
+&lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;io/ioutil&amp;#34;&lt;/span>
+&lt;span style="color:#e6db74">&amp;#34;os&amp;#34;&lt;/span>
+)
+&lt;span style="color:#75715e">// StorageStrategy 存储策略
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">StorageStrategy&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;span style="color:#a6e22e">Save&lt;/span>(&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#a6e22e">data&lt;/span> []&lt;span style="color:#66d9ef">byte&lt;/span>) &lt;span style="color:#66d9ef">error&lt;/span>
+}
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">strategys&lt;/span> = &lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>]&lt;span style="color:#a6e22e">StorageStrategy&lt;/span>{
+&lt;span style="color:#e6db74">&amp;#34;file&amp;#34;&lt;/span>: &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">fileStorage&lt;/span>{},
+&lt;span style="color:#e6db74">&amp;#34;encrypt_file&amp;#34;&lt;/span>: &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">encryptFileStorage&lt;/span>{},
+}
+&lt;span style="color:#75715e">// NewStorageStrategy NewStorageStrategy
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">NewStorageStrategy&lt;/span>(&lt;span style="color:#a6e22e">t&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>) (&lt;span style="color:#a6e22e">StorageStrategy&lt;/span>, &lt;span style="color:#66d9ef">error&lt;/span>) {
+&lt;span style="color:#a6e22e">s&lt;/span>, &lt;span style="color:#a6e22e">ok&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">strategys&lt;/span>[&lt;span style="color:#a6e22e">t&lt;/span>]
+&lt;span style="color:#66d9ef">if&lt;/span> !&lt;span style="color:#a6e22e">ok&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>, &lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Errorf&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;not found StorageStrategy: %s&amp;#34;&lt;/span>, &lt;span style="color:#a6e22e">t&lt;/span>)
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">s&lt;/span>, &lt;span style="color:#66d9ef">nil&lt;/span>
+}
+&lt;span style="color:#75715e">// FileStorage 保存到文件
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">fileStorage&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span>{}
+&lt;span style="color:#75715e">// Save Save
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">s&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">fileStorage&lt;/span>) &lt;span style="color:#a6e22e">Save&lt;/span>(&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#a6e22e">data&lt;/span> []&lt;span style="color:#66d9ef">byte&lt;/span>) &lt;span style="color:#66d9ef">error&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">ioutil&lt;/span>.&lt;span style="color:#a6e22e">WriteFile&lt;/span>(&lt;span style="color:#a6e22e">name&lt;/span>, &lt;span style="color:#a6e22e">data&lt;/span>, &lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">ModeAppend&lt;/span>)
+}
+&lt;span style="color:#75715e">// encryptFileStorage 加密保存到文件
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">encryptFileStorage&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span>{}
+&lt;span style="color:#75715e">// Save Save
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">s&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">encryptFileStorage&lt;/span>) &lt;span style="color:#a6e22e">Save&lt;/span>(&lt;span style="color:#a6e22e">name&lt;/span> &lt;span style="color:#66d9ef">string&lt;/span>, &lt;span style="color:#a6e22e">data&lt;/span> []&lt;span style="color:#66d9ef">byte&lt;/span>) &lt;span style="color:#66d9ef">error&lt;/span> {
+&lt;span style="color:#75715e">// 加密
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">data&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">encrypt&lt;/span>(&lt;span style="color:#a6e22e">data&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span>
+}
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">ioutil&lt;/span>.&lt;span style="color:#a6e22e">WriteFile&lt;/span>(&lt;span style="color:#a6e22e">name&lt;/span>, &lt;span style="color:#a6e22e">data&lt;/span>, &lt;span style="color:#a6e22e">os&lt;/span>.&lt;span style="color:#a6e22e">ModeAppend&lt;/span>)
+}
+&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">encrypt&lt;/span>(&lt;span style="color:#a6e22e">data&lt;/span> []&lt;span style="color:#66d9ef">byte&lt;/span>) ([]&lt;span style="color:#66d9ef">byte&lt;/span>, &lt;span style="color:#66d9ef">error&lt;/span>) {
+&lt;span style="color:#75715e">// 这里实现加密算法
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">data&lt;/span>, &lt;span style="color:#66d9ef">nil&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="使用方式">使用方式&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go"> &lt;span style="color:#a6e22e">data&lt;/span>, &lt;span style="color:#a6e22e">sensitive&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">getData&lt;/span>()
+&lt;span style="color:#a6e22e">strategyType&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;file&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">sensitive&lt;/span> {
+&lt;span style="color:#a6e22e">strategyType&lt;/span> = &lt;span style="color:#e6db74">&amp;#34;encrypt_file&amp;#34;&lt;/span>
+}
+&lt;span style="color:#a6e22e">storage&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">NewStorageStrategy&lt;/span>(&lt;span style="color:#a6e22e">strategyType&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>建造者模式 - 设计模式系列（三）</title><link>https://wnanbei.github.io/post/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%89/</link><pubDate>Tue, 07 Dec 2021 00:00:00 +0000</pubDate><guid>https://wnanbei.github.io/post/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%89/</guid><description>&lt;p>建造者模式（Builder Pattern）是一种对象构建模式，是将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。&lt;/p>
 &lt;h2 id="使用场景">使用场景&lt;/h2>
 &lt;p>当要构建的对象很大并且需要多个步骤时，使用建造者模式，有助于减小构造函数的大小。&lt;/p>
 &lt;h2 id="示例">示例&lt;/h2>
