@@ -1,0 +1,316 @@
+<!doctype html><html lang=zh-cn>
+<head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="截止目前，Go 开发团队已确定在 Go1.18 版本推出范型，范型相关代码也已合并到 master 分支，可以使用 gotip 拉取最新的 Go 源码进行体验。
+不过标准库代码还未进行范型相关改造，Go 的主创团队认为目前范型刚刚推出，如何使用、最佳实践都还没有定论，所以为了保证 Go 的兼容性承若，标准库的改造应该暂缓实施。
+"><title>Go 范型使用方式</title>
+<link rel=canonical href=https://wnanbei.github.io/post/go-%E8%8C%83%E5%9E%8B%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F/>
+<link rel=stylesheet href=/scss/style.min.css><meta property="og:title" content="Go 范型使用方式">
+<meta property="og:description" content="截止目前，Go 开发团队已确定在 Go1.18 版本推出范型，范型相关代码也已合并到 master 分支，可以使用 gotip 拉取最新的 Go 源码进行体验。
+不过标准库代码还未进行范型相关改造，Go 的主创团队认为目前范型刚刚推出，如何使用、最佳实践都还没有定论，所以为了保证 Go 的兼容性承若，标准库的改造应该暂缓实施。
+">
+<meta property="og:url" content="https://wnanbei.github.io/post/go-%E8%8C%83%E5%9E%8B%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F/">
+<meta property="og:site_name" content="WNANBEI">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:published_time" content="2021-11-23T10:08:00+00:00"><meta property="article:modified_time" content="2021-12-26T22:29:07+08:00">
+<meta name=twitter:title content="Go 范型使用方式">
+<meta name=twitter:description content="截止目前，Go 开发团队已确定在 Go1.18 版本推出范型，范型相关代码也已合并到 master 分支，可以使用 gotip 拉取最新的 Go 源码进行体验。
+不过标准库代码还未进行范型相关改造，Go 的主创团队认为目前范型刚刚推出，如何使用、最佳实践都还没有定论，所以为了保证 Go 的兼容性承若，标准库的改造应该暂缓实施。
+">
+<link rel="shortcut icon" href=images/favicon.jpg>
+</head>
+<body class="article-page has-toc">
+<script>(function(){const a='StackColorScheme';localStorage.getItem(a)||localStorage.setItem(a,"auto")})()</script><script>(function(){const b='StackColorScheme',a=localStorage.getItem(b),c=window.matchMedia('(prefers-color-scheme: dark)').matches===!0;a=='dark'||a==='auto'&&c?document.documentElement.dataset.scheme='dark':document.documentElement.dataset.scheme='light'})()</script>
+<div class="container main-container flex
+extended">
+<div id=article-toolbar>
+<a href=/ class=back-home><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="15 6 9 12 15 18"/></svg>
+<span>返回</span>
+</a>
+</div>
+<main class="main full-width">
+<article class=main-article>
+<header class=article-header>
+<div class=article-details>
+<header class=article-category>
+<a href=/categories/go%E8%AF%AD%E6%B3%95/>
+Go语法
+</a>
+</header>
+<h2 class=article-title>
+<a href=/post/go-%E8%8C%83%E5%9E%8B%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F/>Go 范型使用方式</a>
+</h2>
+<footer class=article-time>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2021-11-23</time>
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>
+阅读时长: 3 分钟
+</time>
+</div>
+</footer>
+</div>
+</header>
+<section class=article-content>
+<p>截止目前，Go 开发团队已确定在 Go1.18 版本推出范型，范型相关代码也已合并到 master 分支，可以使用 gotip 拉取最新的 Go 源码进行体验。</p>
+<p>不过标准库代码还未进行范型相关改造，Go 的主创团队认为目前范型刚刚推出，如何使用、最佳实践都还没有定论，所以为了保证 Go 的兼容性承若，标准库的改造应该暂缓实施。</p>
+<h2 id=在-118-之前使用范型>在 1.18 之前使用范型</h2>
+<h3 id=安装-gotip>安装 gotip</h3>
+<p><code>gotip</code> 是一个用来体验最新版 Go 功能的工具，<code>gotip download</code> 命令会下载 Go master 分支最新的代码，在本地进行构建。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>go install golang.org/dl/gotip@latest
+gotip download
+</code></pre></div><p>Go 的安装目录默认在 <code>~/sdk/gotip</code> 目录下。</p>
+<p>安装完毕后，使用 gotip 命令替代正常的 go 命令，就可以使用最新的 Go 版本了。</p>
+<h3 id=安装最新的-gopls>安装最新的 gopls</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>mkdir /tmp/gopls <span style=color:#f92672>&amp;&amp;</span> cd <span style=color:#e6db74>&#34;</span>$_<span style=color:#e6db74>&#34;</span>
+gotip mod init gopls-unstable
+gotip get golang.org/x/tools/gopls@master golang.org/x/tools@master
+gotip install golang.org/x/tools/gopls
+</code></pre></div><h3 id=配置-vscode-或-goland>配置 vscode 或 Goland</h3>
+<p>需要在设置中手动指定 Go 的 GOROOT 路径，也就是 gotip 的安装路径 <code>~/sdk/gotip</code>。</p>
+<h2 id=使用范型的时机>使用范型的时机</h2>
+<p>这里所提出的仅是通用型的指导建议，并不是硬性的规定。</p>
+<h3 id=什么是范型>什么是范型</h3>
+<p>泛型可以先编写数据结构和函数，然后在使用时指定其中的类型。</p>
+<p>有了泛型后，函数可以支持一类新的形式参数（parameter），这类形式参数被称为类型参数（type parameter）。</p>
+<p>类型参数定义了约束（constraints），这些约束限制了允许的类型实参集合，这与普通形参通过类型限制允许的实参集合类似。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>MapKeys</span>[<span style=color:#a6e22e>K</span> <span style=color:#a6e22e>comparable</span>, <span style=color:#a6e22e>V</span> <span style=color:#a6e22e>any</span>](<span style=color:#a6e22e>m</span> <span style=color:#66d9ef>map</span>[<span style=color:#a6e22e>K</span>]<span style=color:#a6e22e>V</span>) []<span style=color:#a6e22e>K</span> {
+  <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>s</span> []<span style=color:#a6e22e>K</span>
+  <span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span> <span style=color:#f92672>:=</span> <span style=color:#66d9ef>range</span> <span style=color:#a6e22e>m</span> {
+    <span style=color:#a6e22e>s</span> = append(<span style=color:#a6e22e>s</span>, <span style=color:#a6e22e>k</span>)
+  }
+  <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>s</span>
+}
+</code></pre></div><p>简单来说，功能一样的函数，不再因为变量类型的不一样而需要写很多遍了。</p>
+<p>声明类型参数后，代码中直接使用类型参数即可，GO 会在编译阶段自动根据类型约束编译多份代码。</p>
+<p><figure>
+<a href=https://img2020.cnblogs.com/blog/2105008/202112/2105008-20211226164934330-158734097.gif>
+<img src=https://img2020.cnblogs.com/blog/2105008/202112/2105008-20211226164934330-158734097.gif loading=lazy alt=2105008-20211226164934330-158734097>
+</a>
+<figcaption>2105008-20211226164934330-158734097</figcaption>
+</figure></p>
+<h3 id=为什么以前没有范型>为什么以前没有范型</h3>
+<p>范型使用起来方便，但是也是需要有一定代价的。</p>
+<p>在一门语言中添加范型支持，需要至少面对以下三个困境中的一个：</p>
+<ol>
+<li><strong>增加程序员的负担</strong>，比如 C 语言，需要曲折的实现，但是不对增加语言的复杂性。</li>
+<li><strong>增加编译器的负担</strong>，比如 C++，可能会产生很多冗余的代码，重复的代码还需要编译器斟酌删除，编译的文件可能非常大。Rust的泛型也属于这一类。</li>
+<li><strong>降低代码执行效率</strong>，比如 Java，将一些类装箱成 Object，进行类型擦除。虽然代码没有多少冗余，节省了空间，但是需要装箱拆箱操作，代码效率低。</li>
+</ol>
+<p>Go 语言最终选择了第二种方案，在编译阶段，根据范型生成多种对应类型的代码，代价是降低一定的执行效率，以及编译文件的大小将会增加。</p>
+<h3 id=何时使用范型>何时使用范型</h3>
+<p>范型极其有用的几个场景：</p>
+<ol>
+<li>
+<p>当函数操作的变量类型为 slice、map、channel，且不关注内部元素类型时。比如获取 map 中所有的 key 放入一个 slice 中。</p>
+</li>
+<li>
+<p>编写通用的数据结构，比如二叉树。</p>
+<p>之前的二叉树内部元素类型多半使用的是 interface，这样在使用这样的数据结构时是非常麻烦的。</p>
+<p>使用范型改造后可以比啊面使用类型断言去判断 interface。</p>
+</li>
+</ol>
+<h3 id=不宜使用范型的场景>不宜使用范型的场景</h3>
+<p><strong>使用类型参数的原因是它们让你的代码更清晰。如果是它们让你的代码变得更复杂，就不要使用</strong>。</p>
+<p>以下是一些不适宜使用范型的场景：</p>
+<ol>
+<li>如果对于某一类型的值所要做的全部操作仅仅是在那个值上调用一个方法，使用 interface 类型，而不是范型。</li>
+<li>如果每种类型的实现各不相同，请使用不同的方法，不要使用范型。</li>
+</ol>
+<h2 id=用法>用法</h2>
+<h3 id=声明范型>声明范型</h3>
+<p>这被称为类型列表（<code>type list</code>）。</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Addable</span> <span style=color:#66d9ef>interface</span> {
+  <span style=color:#66d9ef>int</span> | <span style=color:#66d9ef>int8</span> | <span style=color:#66d9ef>int16</span> | <span style=color:#66d9ef>int32</span> | <span style=color:#66d9ef>int64</span> | <span style=color:#66d9ef>uint</span> | <span style=color:#66d9ef>uint8</span> | <span style=color:#66d9ef>uint16</span> | <span style=color:#66d9ef>uint32</span> | <span style=color:#66d9ef>uint64</span> | <span style=color:#66d9ef>string</span>
+}
+</code></pre></div><p>类型同样可以组合：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Signed</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int8</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int16</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int32</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int64</span>
+}
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Unsigned</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint8</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint16</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint32</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint64</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uintptr</span>
+}
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Integer</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#a6e22e>Signed</span> | <span style=color:#a6e22e>Unsigned</span>
+}
+</code></pre></div><h3 id=函数约束>函数约束</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#75715e>// 没有任何约束
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add</span>[<span style=color:#a6e22e>T</span> <span style=color:#a6e22e>any</span>](<span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>y</span> <span style=color:#a6e22e>T</span>) <span style=color:#a6e22e>T</span>
+<span style=color:#75715e>// 约束 Addble (需要单独定义)
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add</span>[<span style=color:#a6e22e>T</span> <span style=color:#a6e22e>Addble</span>](<span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>y</span> <span style=color:#a6e22e>T</span>) <span style=color:#a6e22e>T</span>
+<span style=color:#75715e>// 约束允许 int 或 float64 类型
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add</span>[<span style=color:#a6e22e>T</span> <span style=color:#66d9ef>int</span>|<span style=color:#66d9ef>float64</span>](<span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>y</span> <span style=color:#a6e22e>T</span>) <span style=color:#a6e22e>T</span>
+<span style=color:#75715e>// 约束允许底层类型是 string 的类型（包括 string 类型）
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>add</span>[<span style=color:#a6e22e>T</span> <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>string</span>](<span style=color:#a6e22e>x</span>, <span style=color:#a6e22e>y</span> <span style=color:#a6e22e>T</span>) <span style=color:#a6e22e>T</span>
+</code></pre></div><h3 id=constraints-包>constraints 包</h3>
+<p>Go 官方提供了一个 <code>constraints</code> 包，以提供一些常见的类型：</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Signed</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int8</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int16</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int32</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>int64</span>
+}
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Unsigned</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint8</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint16</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint32</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uint64</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>uintptr</span>
+}
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Integer</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#a6e22e>Signed</span> | <span style=color:#a6e22e>Unsigned</span>
+}
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Float</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>float32</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>float64</span>
+}
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Complex</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>complex64</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>complex128</span>
+}
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Ordered</span> <span style=color:#66d9ef>interface</span> {
+	<span style=color:#a6e22e>Integer</span> | <span style=color:#a6e22e>Float</span> | <span style=color:#960050;background-color:#1e0010>~</span><span style=color:#66d9ef>string</span>
+}
+</code></pre></div><h3 id=any-约束>any 约束</h3>
+<h2 id=范型推导>范型推导</h2>
+<h2 id=slices>Slices</h2>
+<h2 id=maps>Maps</h2>
+</section>
+<footer class=article-footer>
+<section class=article-tags>
+<a href=/tags/go/>Go</a>
+</section>
+<section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under MIT License</span>
+</section>
+<section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<span>
+最后更新于 2021-12-26 22:29:07
+</span>
+</section></footer>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
+</article>
+<aside class=related-contents--wrapper>
+<h2 class=section-title>相关文章</h2>
+<div class=related-contents>
+<div class="flex article-list--tile">
+<article>
+<a href=/post/go-%E5%9F%BA%E7%A1%80%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/>
+<div class=article-details>
+<h2 class=article-title>Go 基础数据结构</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%B9%B6%E5%8F%91%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-channel/>
+<div class=article-details>
+<h2 class=article-title>Go 并发消息队列 channel</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E7%BB%93%E6%9E%84%E4%BD%93-struct/>
+<div class=article-details>
+<h2 class=article-title>Go 结构体 struct</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-interface-%E6%8E%A5%E5%8F%A3/>
+<div class=article-details>
+<h2 class=article-title>Go interface 接口</h2>
+</div>
+</a>
+</article>
+<article>
+<a href=/post/go-%E5%8C%85%E7%AE%A1%E7%90%86-package/>
+<div class=article-details>
+<h2 class=article-title>Go 包管理 Package</h2>
+</div>
+</a>
+</article>
+</div>
+</div>
+</aside>
+<footer class=site-footer>
+<section class=copyright>
+&copy;
+2021 WNANBEI
+</section>
+<section class=powerby>
+The world has kissed my soul with its pain, asking for its return in songs. <br>
+Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> <br>
+Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.5.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a>
+</section>
+</footer>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css integrity="sha256-c0uckgykQ9v5k+IqViZOZKc47Jn7KQil4/MP3ySA3F8=" crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE=" crossorigin=anonymous>
+</main>
+<aside class="sidebar right-sidebar sticky">
+<section class="widget archives">
+<div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg>
+</div>
+<h2 class="widget-title section-title">目录</h2>
+<div class=widget--toc>
+<nav id=TableOfContents>
+<ol>
+<li><a href=#在-118-之前使用范型>在 1.18 之前使用范型</a>
+<ol>
+<li><a href=#安装-gotip>安装 gotip</a></li>
+<li><a href=#安装最新的-gopls>安装最新的 gopls</a></li>
+<li><a href=#配置-vscode-或-goland>配置 vscode 或 Goland</a></li>
+</ol>
+</li>
+<li><a href=#使用范型的时机>使用范型的时机</a>
+<ol>
+<li><a href=#什么是范型>什么是范型</a></li>
+<li><a href=#为什么以前没有范型>为什么以前没有范型</a></li>
+<li><a href=#何时使用范型>何时使用范型</a></li>
+<li><a href=#不宜使用范型的场景>不宜使用范型的场景</a></li>
+</ol>
+</li>
+<li><a href=#用法>用法</a>
+<ol>
+<li><a href=#声明范型>声明范型</a></li>
+<li><a href=#函数约束>函数约束</a></li>
+<li><a href=#constraints-包>constraints 包</a></li>
+<li><a href=#any-约束>any 约束</a></li>
+</ol>
+</li>
+<li><a href=#范型推导>范型推导</a></li>
+<li><a href=#slices>Slices</a></li>
+<li><a href=#maps>Maps</a></li>
+</ol>
+</nav>
+</div>
+</section>
+</aside>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g=" crossorigin=anonymous defer></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const a=document.createElement('link');a.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",a.type="text/css",a.rel="stylesheet",document.head.appendChild(a)})()</script>
+</body>
+</html>
