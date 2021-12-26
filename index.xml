@@ -527,14 +527,62 @@ alt="隔离程序">
 &lt;li>&lt;code>煮面过程&lt;/code>的烧水方式是可变的&lt;/li>
 &lt;/ul>
 &lt;p>如果能满足这样的条件，就可以使用模板方法。&lt;/p>
-&lt;h2 id="使用方式">使用方式&lt;/h2>
-&lt;p>可以有四个步骤：&lt;/p>
-&lt;ul>
-&lt;li>业务梳理&lt;/li>
-&lt;li>代码建模&lt;/li>
-&lt;li>代码 Demo&lt;/li>
-&lt;/ul>
-&lt;h3 id="业务梳理">业务梳理&lt;/h3></description></item><item><title>ElasticSearch CRUD 接口</title><link>https://wnanbei.github.io/post/elasticsearch-crud-%E6%8E%A5%E5%8F%A3/</link><pubDate>Sat, 06 Nov 2021 16:17:25 +0000</pubDate><guid>https://wnanbei.github.io/post/elasticsearch-crud-%E6%8E%A5%E5%8F%A3/</guid><description>&lt;p>ElasticSearch 使用 HTTP 协议的 Restful 接口，来对接不同的程序系统。&lt;/p>
+&lt;h2 id="示例">示例&lt;/h2>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#f92672">package&lt;/span> &lt;span style="color:#a6e22e">template&lt;/span>
+&lt;span style="color:#f92672">import&lt;/span> &lt;span style="color:#e6db74">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">Cooker&lt;/span> &lt;span style="color:#66d9ef">interface&lt;/span> {
+&lt;span style="color:#a6e22e">open&lt;/span>()
+&lt;span style="color:#a6e22e">fire&lt;/span>()
+&lt;span style="color:#a6e22e">cooke&lt;/span>()
+&lt;span style="color:#a6e22e">outfire&lt;/span>()
+close()
+}
+&lt;span style="color:#75715e">// 类似于一个抽象类
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">CookMenu&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">CookMenu&lt;/span>) &lt;span style="color:#a6e22e">open&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;打开开关&amp;#34;&lt;/span>)
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">CookMenu&lt;/span>) &lt;span style="color:#a6e22e">fire&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;开火&amp;#34;&lt;/span>)
+}
+&lt;span style="color:#75715e">// 做菜，交给具体的子类实现
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">CookMenu&lt;/span>) &lt;span style="color:#a6e22e">cooke&lt;/span>() {
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">CookMenu&lt;/span>) &lt;span style="color:#a6e22e">outfire&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;关火&amp;#34;&lt;/span>)
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">CookMenu&lt;/span>) close() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;关闭开关&amp;#34;&lt;/span>)
+}
+&lt;span style="color:#75715e">// 封装具体步骤
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">doCook&lt;/span>(&lt;span style="color:#a6e22e">cook&lt;/span> &lt;span style="color:#a6e22e">Cooker&lt;/span>) {
+&lt;span style="color:#a6e22e">cook&lt;/span>.&lt;span style="color:#a6e22e">open&lt;/span>()
+&lt;span style="color:#a6e22e">cook&lt;/span>.&lt;span style="color:#a6e22e">fire&lt;/span>()
+&lt;span style="color:#a6e22e">cook&lt;/span>.&lt;span style="color:#a6e22e">cooke&lt;/span>()
+&lt;span style="color:#a6e22e">cook&lt;/span>.&lt;span style="color:#a6e22e">outfire&lt;/span>()
+&lt;span style="color:#a6e22e">cook&lt;/span>.close()
+}
+&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">XiHongShi&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">CookMenu&lt;/span>
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">XiHongShi&lt;/span>) &lt;span style="color:#a6e22e">cooke&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;做西红柿&amp;#34;&lt;/span>)
+}
+&lt;span style="color:#66d9ef">type&lt;/span> &lt;span style="color:#a6e22e">ChaoJiDan&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> {
+&lt;span style="color:#a6e22e">CookMenu&lt;/span>
+}
+&lt;span style="color:#66d9ef">func&lt;/span> (&lt;span style="color:#a6e22e">ChaoJiDan&lt;/span>) &lt;span style="color:#a6e22e">cooke&lt;/span>() {
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;做炒鸡蛋&amp;#34;&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="使用方式">使用方式&lt;/h3>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go"> &lt;span style="color:#75715e">// 做西红柿
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">xihongshi&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">XiHongShi&lt;/span>{}
+&lt;span style="color:#a6e22e">doCook&lt;/span>(&lt;span style="color:#a6e22e">xihongshi&lt;/span>)
+&lt;span style="color:#75715e">// 做炒鸡蛋
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">chaojidan&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">ChaoJiDan&lt;/span>{}
+&lt;span style="color:#a6e22e">doCook&lt;/span>(&lt;span style="color:#a6e22e">chaojidan&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>ElasticSearch CRUD 接口</title><link>https://wnanbei.github.io/post/elasticsearch-crud-%E6%8E%A5%E5%8F%A3/</link><pubDate>Sat, 06 Nov 2021 16:17:25 +0000</pubDate><guid>https://wnanbei.github.io/post/elasticsearch-crud-%E6%8E%A5%E5%8F%A3/</guid><description>&lt;p>ElasticSearch 使用 HTTP 协议的 Restful 接口，来对接不同的程序系统。&lt;/p>
 &lt;h2 id="查询">查询&lt;/h2>
 &lt;h3 id="get">Get&lt;/h3>
 &lt;p>读取一条文档。&lt;/p>

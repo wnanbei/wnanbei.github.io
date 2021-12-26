@@ -10,7 +10,7 @@
  不变的算法被继承复用：不变的部分高度封装、复用。 变化的算法子类继承并具体实现：变化的部分子类只需要具体实现抽象的部分即可，方便扩展，且可无限扩展。 ">
 <meta property="og:url" content="https://wnanbei.github.io/post/%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%B3%BB%E5%88%97%E4%B8%80/">
 <meta property="og:site_name" content="WNANBEI">
-<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:published_time" content="2021-11-09T00:00:00+00:00"><meta property="article:modified_time" content="2021-11-09T23:34:24+08:00">
+<meta property="og:type" content="article"><meta property="article:section" content="Post"><meta property="article:tag" content="Go"><meta property="article:published_time" content="2021-11-09T00:00:00+00:00"><meta property="article:modified_time" content="2021-12-26T20:35:40+08:00">
 <meta name=twitter:title content="模板模式 - 设计模式系列（一）">
 <meta name=twitter:description content="模板模式是指抽象类里定义好算法的执行步骤和具体算法，以及可能发生变化的算法定义为抽象方法。不同的子类继承该抽象类，并实现父类的抽象方法。
 优势：
@@ -44,7 +44,7 @@ extended">
 </div>
 <div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <time class=article-time--reading>
-阅读时长: 1 分钟
+阅读时长: 2 分钟
 </time>
 </div>
 </footer>
@@ -68,14 +68,76 @@ extended">
 <li><code>煮面过程</code>的烧水方式是可变的</li>
 </ul>
 <p>如果能满足这样的条件，就可以使用模板方法。</p>
-<h2 id=使用方式>使用方式</h2>
-<p>可以有四个步骤：</p>
-<ul>
-<li>业务梳理</li>
-<li>代码建模</li>
-<li>代码 Demo</li>
-</ul>
-<h3 id=业务梳理>业务梳理</h3>
+<h2 id=示例>示例</h2>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=color:#f92672>package</span> <span style=color:#a6e22e>template</span>
+
+<span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Cooker</span> <span style=color:#66d9ef>interface</span> {
+    <span style=color:#a6e22e>open</span>()
+    <span style=color:#a6e22e>fire</span>()
+    <span style=color:#a6e22e>cooke</span>()
+    <span style=color:#a6e22e>outfire</span>()
+    close()
+}
+
+<span style=color:#75715e>// 类似于一个抽象类
+</span><span style=color:#75715e></span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>CookMenu</span> <span style=color:#66d9ef>struct</span> {
+}
+
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>CookMenu</span>) <span style=color:#a6e22e>open</span>() {
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;打开开关&#34;</span>)
+}
+
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>CookMenu</span>) <span style=color:#a6e22e>fire</span>() {
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;开火&#34;</span>)
+}
+
+<span style=color:#75715e>// 做菜，交给具体的子类实现
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>CookMenu</span>) <span style=color:#a6e22e>cooke</span>() {
+}
+
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>CookMenu</span>) <span style=color:#a6e22e>outfire</span>() {
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;关火&#34;</span>)
+}
+
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>CookMenu</span>) close() {
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;关闭开关&#34;</span>)
+}
+
+<span style=color:#75715e>// 封装具体步骤
+</span><span style=color:#75715e></span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>doCook</span>(<span style=color:#a6e22e>cook</span> <span style=color:#a6e22e>Cooker</span>) {
+    <span style=color:#a6e22e>cook</span>.<span style=color:#a6e22e>open</span>()
+    <span style=color:#a6e22e>cook</span>.<span style=color:#a6e22e>fire</span>()
+    <span style=color:#a6e22e>cook</span>.<span style=color:#a6e22e>cooke</span>()
+    <span style=color:#a6e22e>cook</span>.<span style=color:#a6e22e>outfire</span>()
+    <span style=color:#a6e22e>cook</span>.close()
+}
+
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>XiHongShi</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>CookMenu</span>
+}
+
+<span style=color:#66d9ef>func</span> (<span style=color:#f92672>*</span><span style=color:#a6e22e>XiHongShi</span>) <span style=color:#a6e22e>cooke</span>() {
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;做西红柿&#34;</span>)
+}
+
+<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>ChaoJiDan</span> <span style=color:#66d9ef>struct</span> {
+    <span style=color:#a6e22e>CookMenu</span>
+}
+
+<span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>ChaoJiDan</span>) <span style=color:#a6e22e>cooke</span>() {
+    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;做炒鸡蛋&#34;</span>)
+}
+</code></pre></div><h3 id=使用方式>使用方式</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go>	<span style=color:#75715e>// 做西红柿
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>xihongshi</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>XiHongShi</span>{}
+	<span style=color:#a6e22e>doCook</span>(<span style=color:#a6e22e>xihongshi</span>)
+
+	<span style=color:#75715e>// 做炒鸡蛋
+</span><span style=color:#75715e></span>	<span style=color:#a6e22e>chaojidan</span> <span style=color:#f92672>:=</span> <span style=color:#f92672>&amp;</span><span style=color:#a6e22e>ChaoJiDan</span>{}
+	<span style=color:#a6e22e>doCook</span>(<span style=color:#a6e22e>chaojidan</span>)
+</code></pre></div>
 </section>
 <footer class=article-footer>
 <section class=article-tags>
@@ -86,7 +148,7 @@ extended">
 </section>
 <section class=article-lastmod><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <span>
-最后更新于 2021-11-09 23:34:24
+最后更新于 2021-12-26 20:35:40
 </span>
 </section></footer>
 <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.css integrity=sha384-RZU/ijkSsFbcmivfdRBQDtwuwVqK7GMOw6IMvKyeWL2K5UAlyp6WonmB8m7Jd0Hn crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/katex.min.js integrity=sha384-pK1WpvzWVBQiP0/GjnvRxV4mOb0oxFuyRxJlk6vVw146n3egcN5C925NCP7a7BY8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.13.13/dist/contrib/auto-render.min.js integrity=sha384-vZTG03m+2yp6N6BNi5iM4rW4oIwk5DfcNdFfxkk9ZWpDriOkXX8voJBFrAO7MpVl crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.querySelector(`.article-content`),{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}]})})</script>
@@ -176,9 +238,9 @@ Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=
 <nav id=TableOfContents>
 <ol>
 <li><a href=#适用场景>适用场景</a></li>
-<li><a href=#使用方式>使用方式</a>
+<li><a href=#示例>示例</a>
 <ol>
-<li><a href=#业务梳理>业务梳理</a></li>
+<li><a href=#使用方式>使用方式</a></li>
 </ol>
 </li>
 </ol>
